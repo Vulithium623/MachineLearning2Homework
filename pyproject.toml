@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "few-shot-image-classification"
+version = "0.1.0"
+description = "5-class few-shot image classification with limited training samples"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "torchvision>=0.15",
+    "pillow>=10.0",
+    "numpy>=1.24",
+    "tqdm>=4.65",
+    "matplotlib>=3.7",
+]
+
+[tool.setuptools]
+py-modules = []
