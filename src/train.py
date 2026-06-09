@@ -54,6 +54,28 @@ def setup_logger(run_dir, log_filename='run.log'):
     
     return logger
 
+# ==========================================
+# Focal Loss Implementation
+# ==========================================
+class FocalLoss(nn.Module):
+    def __init__(self, gamma=2.0, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.reduction = reduction
+        self.ce_loss = nn.CrossEntropyLoss(reduction='none')
+
+    def forward(self, inputs, targets):
+        log_pt = -self.ce_loss(inputs, targets)
+        pt = torch.exp(log_pt)
+        focal_loss = -((1 - pt) ** self.gamma) * log_pt
+
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        else:
+            return focal_loss
+
 class CustomViTModel(nn.Module):
     def __init__(self, backbone_name, weight_path, num_classes):
         super().__init__()
@@ -172,9 +194,10 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
     )
     model = get_peft_model(base_model, lora_config).to(device)
     
-    # 2. Re-initialize Optimizer
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    # 2. Re-initialize Optimizer (AdamW), Loss (Focal Loss), and Scheduler (Cosine)
+    criterion = FocalLoss(gamma=args.focal_gamma)
+    optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
 
     best_f1 = 0.0
     mixup_disabled_flag = False
@@ -208,6 +231,7 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
             train_loss += loss.item() * inputs.size(0)
             
         train_loss /= len(train_loader.dataset)
+        current_lr = scheduler.get_last_lr()[0]
         
         # --- Eval ---
         model.eval()
@@ -230,12 +254,15 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
         macro_f1 = f1_score(all_labels, all_preds, average='macro', zero_division=0)
         balanced_acc = balanced_accuracy_score(all_labels, all_preds)
         
-        logger.info(f"[Fold {fold}] Epoch [{epoch:02d}/{args.epochs}] | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | F1: {macro_f1:.4f} | B-Acc: {balanced_acc:.4f}")
+        logger.info(f"[Fold {fold}] Epoch [{epoch:02d}/{args.epochs}] | LR: {current_lr:.2e} | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | F1: {macro_f1:.4f} | B-Acc: {balanced_acc:.4f}")
         
         if macro_f1 > best_f1:
             best_f1 = macro_f1
             torch.save(model.state_dict(), os.path.join(fold_dir, 'best.pth'))
             logger.info(f"[Fold {fold}] --> Saved new best model (F1: {best_f1:.4f})")
+            
+        # Step the Cosine Scheduler at the end of the epoch
+        scheduler.step()
             
     torch.save(model.state_dict(), os.path.join(fold_dir, 'last.pth'))
     return best_f1
@@ -247,10 +274,14 @@ def main():
     parser.add_argument('--name', type=str, default=None, help='Experiment name')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
     parser.add_argument('--epochs', type=int, default=50, help='Number of epochs per fold')
-    parser.add_argument('--lr', type=float, default=5e-4, help='Learning rate')
+    parser.add_argument('--lr', type=float, default=5e-4, help='Learning rate (Max LR for Cosine)')
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
     parser.add_argument('--num_workers', type=int, default=4, help='Dataloader workers')
-    parser.add_argument('--k_folds', type=int, default=5, help='Number of folds for Cross Validation')
+    parser.add_argument('--k_folds', type=int, default=7, help='Number of folds for Cross Validation (Default: 7)')
+    
+    # Optimizer & Loss args
+    parser.add_argument('--weight_decay', type=float, default=1e-4, help='Weight decay for AdamW')
+    parser.add_argument('--focal_gamma', type=float, default=2.0, help='Gamma value for Focal Loss')
     
     # LoRA args
     parser.add_argument('--lora_r', type=int, default=8)
@@ -267,6 +298,11 @@ def main():
     parser.add_argument('--mixup_alpha', type=float, default=0.8)
     parser.add_argument('--mixup_cutoff', type=float, default=0.2)
     
+    # Medical Elastic Transform
+    parser.add_argument('--elastic_prob', type=float, default=0.5, help='Probability to apply Elastic Transform')
+    parser.add_argument('--elastic_alpha', type=float, default=25.0, help='Elastic Transform Alpha')
+    parser.add_argument('--elastic_sigma', type=float, default=4.0, help='Elastic Transform Sigma')
+    
     args = parser.parse_args()
     args.data_path = os.path.expanduser(args.data_path)
     args.weight_path = os.path.expanduser(args.weight_path)
@@ -280,19 +316,34 @@ def main():
         torch.cuda.manual_seed_all(args.seed)
 
     main_logger.info("="*50)
-    main_logger.info(f"K-Fold Experiment Started. Main directory: {run_dir}")
+    main_logger.info(f"Phase 2.5: Ultimate K-Fold Experiment Started.")
+    main_logger.info(f"Logs & Models saving to: {run_dir}")
     main_logger.info(f"Using {args.k_folds}-Fold Stratified Cross Validation")
     main_logger.info("="*50)
 
     # Setup Transforms
     train_transform_list = []
+    
+    # 1. Geometric transforms
     if not args.no_hflip: train_transform_list.append(transforms.RandomHorizontalFlip())
     if not args.no_vflip: train_transform_list.append(transforms.RandomVerticalFlip())
     if not args.no_rotate or args.translate > 0:
         train_transform_list.append(SafeRandomAffine(enable_rotate=not args.no_rotate, translate_frac=args.translate, mode=args.rotate_pad_mode))
+        
+    # 2. Medical Elastic Transform (Squeeze and Stretch)
+    if args.elastic_prob > 0:
+        train_transform_list.append(
+            transforms.RandomApply(
+                [transforms.ElasticTransform(alpha=args.elastic_alpha, sigma=args.elastic_sigma)],
+                p=args.elastic_prob
+            )
+        )
+        
+    # 3. Color transforms
     if args.color_jitter > 0:
         train_transform_list.append(transforms.ColorJitter(brightness=args.color_jitter, contrast=args.color_jitter))
         
+    # 4. Standard Base Resize & Normalize
     train_transform_list.extend([
         transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
         transforms.ToTensor(),
@@ -310,7 +361,7 @@ def main():
     num_classes = len(full_dataset.classes)
     targets = full_dataset.targets
     
-    # 5-Fold Stratified Splitting
+    # K-Fold Stratified Splitting
     skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
     fold_results = []
     
