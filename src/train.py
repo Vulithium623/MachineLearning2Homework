@@ -8,9 +8,11 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets, transforms
 import torchvision.transforms.functional as F_t
+import torchvision
+import matplotlib.pyplot as plt
 import timm
 from sklearn.metrics import f1_score, balanced_accuracy_score
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedKFold
 from peft import LoraConfig, get_peft_model
 
 def get_run_dir(base_dir="runs/train", name=None):
@@ -29,19 +31,20 @@ def get_run_dir(base_dir="runs/train", name=None):
             return target_dir
         i = 1
         while True:
-            new_dir = f"{target_dir}{i}"
+            new_dir = f"{target_dir}_{i}"
             if not os.path.exists(new_dir):
                 os.makedirs(new_dir)
                 return new_dir
             i += 1
 
-def setup_logger(run_dir):
-    logger = logging.getLogger("Experiment")
+def setup_logger(run_dir, log_filename='run.log'):
+    logger = logging.getLogger(f"Experiment_{run_dir}")
     logger.setLevel(logging.INFO)
+    logger.handlers = [] # Clear existing handlers
     
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     
-    fh = logging.FileHandler(os.path.join(run_dir, 'run.log'))
+    fh = logging.FileHandler(os.path.join(run_dir, log_filename))
     fh.setFormatter(formatter)
     logger.addHandler(fh)
     
@@ -81,32 +84,37 @@ class DatasetWrapper(Dataset):
             img = self.transform(img)
         return img, label
 
-class SafeRandomRotation:
-    """
-    Custom Rotation that supports reflection/edge padding to avoid black borders.
-    """
-    def __init__(self, degrees, mode='reflect'):
-        self.degrees = degrees
+class SafeRandomAffine:
+    def __init__(self, enable_rotate=True, translate_frac=0.1, mode='reflect'):
+        self.enable_rotate = enable_rotate
+        self.translate_frac = translate_frac
         self.mode = mode
-        if self.mode == 'zeros':
-            self.pad_mode = 'constant'
-        else:
-            self.pad_mode = self.mode
+        self.pad_mode = 'constant' if mode == 'zeros' else mode
 
     def __call__(self, img):
-        angle = transforms.RandomRotation.get_params([-self.degrees, self.degrees])
+        if not self.enable_rotate and self.translate_frac <= 0:
+            return img
+            
+        degrees = [-180.0, 180.0] if self.enable_rotate else [0.0, 0.0]
+        w, h = img.size
+        angle = transforms.RandomRotation.get_params(degrees)
         
-        if self.pad_mode == 'constant':
-            return F_t.rotate(img, angle, fill=0)
+        if self.translate_frac > 0:
+            max_dx = float(self.translate_frac * w)
+            max_dy = float(self.translate_frac * h)
+            tx = int(np.round(torch.empty(1).uniform_(-max_dx, max_dx).item()))
+            ty = int(np.round(torch.empty(1).uniform_(-max_dy, max_dy).item()))
+            translations = (tx, ty)
         else:
-            w, h = img.size
+            translations = (0, 0)
+
+        if self.pad_mode == 'constant':
+            return F_t.affine(img, angle=angle, translate=translations, scale=1.0, shear=0.0, fill=0)
+        else:
             pad_w, pad_h = w // 2, h // 2
-            # 1. Pad using the chosen mode
             img_padded = F_t.pad(img, (pad_w, pad_h, pad_w, pad_h), padding_mode=self.pad_mode)
-            # 2. Rotate
-            img_rotated = F_t.rotate(img_padded, angle)
-            # 3. Center crop back to original size
-            return F_t.center_crop(img_rotated, (h, w))
+            img_transformed = F_t.affine(img_padded, angle=angle, translate=translations, scale=1.0, shear=0.0)
+            return F_t.center_crop(img_transformed, (h, w))
 
 def mixup_data(x, y, alpha=0.8):
     if alpha > 0:
@@ -122,119 +130,38 @@ def mixup_data(x, y, alpha=0.8):
 def mixup_criterion(criterion, pred, y_a, y_b, lam):
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
-def main():
-    parser = argparse.ArgumentParser(description="LoRA Fine-tuning with DINOv2 (Fixed Transforms)")
-    parser.add_argument('--data_path', type=str, default='~/autodl-tmp/data/train_few_shot/', help='Path to dataset')
-    parser.add_argument('--weight_path', type=str, default='~/autodl-tmp/weights/dinov2_small.bin', help='Path to weights')
-    parser.add_argument('--name', type=str, default=None, help='Experiment name')
-    parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
-    parser.add_argument('--epochs', type=int, default=50, help='Number of epochs')
-    parser.add_argument('--lr', type=float, default=5e-4, help='Learning rate')
-    parser.add_argument('--seed', type=int, default=42, help='Random seed')
-    parser.add_argument('--val_split', type=float, default=0.15, help='Validation set split ratio')
-    parser.add_argument('--num_workers', type=int, default=4, help='Dataloader workers')
+def save_augmentation_preview(loader, run_dir, logger, num_images=16):
+    logger.info("Generating data augmentation preview...")
+    batch_x, batch_y = next(iter(loader))
+    batch_x = batch_x[:num_images]
     
-    # LoRA specific arguments
-    parser.add_argument('--lora_r', type=int, default=8, help='LoRA rank')
-    parser.add_argument('--lora_alpha', type=int, default=16, help='LoRA alpha')
-    parser.add_argument('--lora_dropout', type=float, default=0.1, help='LoRA dropout')
+    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+    std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+    batch_x = batch_x * std + mean
+    batch_x = torch.clamp(batch_x, 0, 1)
     
-    # Data Augmentation Arguments
-    parser.add_argument('--no_hflip', action='store_true', help="Disable Horizontal Flip")
-    parser.add_argument('--no_vflip', action='store_true', help="Disable Vertical Flip")
-    parser.add_argument('--rotate_deg', type=float, default=15.0, help="Rotation degrees (default: 15)")
-    parser.add_argument('--rotate_pad_mode', type=str, default='reflect', choices=['zeros', 'reflect', 'edge', 'symmetric'], help="Padding mode for rotation")
-    parser.add_argument('--color_jitter', type=float, default=0.2, help="Color Jitter factor for brightness/contrast (default: 0.2, 0 to disable)")
-    parser.add_argument('--mixup_alpha', type=float, default=0.8, help="MixUp alpha (default: 0.8, 0 to disable)")
-    parser.add_argument('--mixup_cutoff', type=float, default=0.2, help="Disable MixUp in the last X proportion of epochs (default: 0.2. 0 to never disable)")
+    grid = torchvision.utils.make_grid(batch_x, nrow=4, padding=2, normalize=False)
     
-    args = parser.parse_args()
-    
-    args.data_path = os.path.expanduser(args.data_path)
-    args.weight_path = os.path.expanduser(args.weight_path)
-    
-    run_dir = get_run_dir(base_dir="runs/train", name=args.name)
-    logger = setup_logger(run_dir)
-    
-    torch.manual_seed(args.seed)
-    np.random.seed(args.seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(args.seed)
+    plt.figure(figsize=(10, 10))
+    plt.imshow(grid.permute(1, 2, 0).numpy())
+    plt.axis('off')
+    plt.tight_layout()
+    preview_path = os.path.join(run_dir, 'augmentation_preview.png')
+    plt.savefig(preview_path, dpi=150, bbox_inches='tight')
+    plt.close()
 
-    logger.info("="*50)
-    logger.info(f"Experiment Started. Results saved to {run_dir}")
-    logger.info("="*50)
-    logger.info("HYPERPARAMETERS:")
-    for key, value in vars(args).items():
-        logger.info(f"  {key}: {value}")
-
-    use_hflip = not args.no_hflip
-    use_vflip = not args.no_vflip
-    
-    cutoff_epoch = args.epochs - int(args.epochs * args.mixup_cutoff) if args.mixup_cutoff > 0 else args.epochs + 1
-    
-    logger.info("="*50)
-    logger.info("DATA AUGMENTATION SETTINGS:")
-    logger.info(f"  Horizontal Flip : {'Enabled' if use_hflip else 'Disabled'}")
-    logger.info(f"  Vertical Flip   : {'Enabled' if use_vflip else 'Disabled'}")
-    logger.info(f"  Rotation        : Random [-{args.rotate_deg}, +{args.rotate_deg}] degrees (Pad Mode: {args.rotate_pad_mode})")
-    logger.info(f"  Color Jitter    : {'Enabled (Brightness/Contrast: ' + str(args.color_jitter) + ', Saturation: Disabled)' if args.color_jitter > 0 else 'Disabled'}")
-    logger.info(f"  MixUp           : {'Enabled (Alpha: ' + str(args.mixup_alpha) + ')' if args.mixup_alpha > 0 else 'Disabled'}")
-    if args.mixup_alpha > 0 and args.mixup_cutoff > 0:
-        logger.info(f"  MixUp Cutoff    : Enabled (Will disable after epoch {cutoff_epoch})")
-    logger.info("="*50)
-
-    # Transforms Pipeline: Geometrics & Color first, Resize LAST.
-    train_transform_list = []
-    
-    if use_hflip:
-        train_transform_list.append(transforms.RandomHorizontalFlip())
-    if use_vflip:
-        train_transform_list.append(transforms.RandomVerticalFlip())
-    if args.rotate_deg > 0:
-        train_transform_list.append(SafeRandomRotation(args.rotate_deg, mode=args.rotate_pad_mode))
-    if args.color_jitter > 0:
-        # Note: saturation is omitted explicitly
-        train_transform_list.append(transforms.ColorJitter(brightness=args.color_jitter, contrast=args.color_jitter))
-        
-    # Resize must happen right before ToTensor
-    train_transform_list.extend([
-        transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    ])
-    
-    train_transform = transforms.Compose(train_transform_list)
-    val_transform = transforms.Compose([
-        transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    ])
-
-    logger.info("Loading dataset and applying Stratified Split...")
-    full_dataset = datasets.ImageFolder(root=args.data_path, transform=None)
-    num_classes = len(full_dataset.classes)
-    
-    targets = full_dataset.targets
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=args.val_split, random_state=args.seed)
-    train_indices, val_indices = next(sss.split(np.zeros(len(targets)), targets))
-    
-    train_dataset = DatasetWrapper(full_dataset, train_indices, transform=train_transform)
-    val_dataset = DatasetWrapper(full_dataset, val_indices, transform=val_transform)
-    
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
-    
-    logger.info(f"Train size: {len(train_dataset)} | Val size: {len(val_dataset)}")
-
+# ==========================================
+# Core Training Function (For a single fold)
+# ==========================================
+def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logger):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
+    # 1. Re-initialize Model entirely for this fold
     base_model = CustomViTModel(
         backbone_name='vit_small_patch14_dinov2.lvd142m', 
         weight_path=args.weight_path,
         num_classes=num_classes
     )
-
     lora_config = LoraConfig(
         r=args.lora_r,
         lora_alpha=args.lora_alpha,
@@ -243,35 +170,31 @@ def main():
         bias="none",
         modules_to_save=["head"]
     )
+    model = get_peft_model(base_model, lora_config).to(device)
     
-    model = get_peft_model(base_model, lora_config)
-    model = model.to(device)
-    
-    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    all_params = sum(p.numel() for p in model.parameters())
-    logger.info(f"Trainable Parameters: {trainable_params} / {all_params} ({100 * trainable_params / all_params:.4f}%)")
-
+    # 2. Re-initialize Optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     best_f1 = 0.0
     mixup_disabled_flag = False
+    cutoff_epoch = args.epochs - int(args.epochs * args.mixup_cutoff) if args.mixup_cutoff > 0 else args.epochs + 1
+    
+    logger.info(f"=== Starting Training for Fold {fold} ===")
     
     for epoch in range(1, args.epochs + 1):
         if args.mixup_alpha > 0 and args.mixup_cutoff > 0 and epoch > cutoff_epoch and not mixup_disabled_flag:
-            logger.info(f"--- Epoch {epoch}: MixUp is now DISABLED for the remaining epochs to sharpen predictions! ---")
+            logger.info(f"[Fold {fold}] Epoch {epoch}: MixUp is now DISABLED!")
             mixup_disabled_flag = True
 
+        # --- Train ---
         model.train()
         train_loss = 0.0
-        
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)
-            
             optimizer.zero_grad()
             
             mixup_active = (args.mixup_alpha > 0) and (not mixup_disabled_flag)
-            
             if mixup_active:
                 inputs, targets_a, targets_b, lam = mixup_data(inputs, labels, args.mixup_alpha)
                 outputs = model(inputs)
@@ -282,15 +205,14 @@ def main():
                 
             loss.backward()
             optimizer.step()
-            
             train_loss += loss.item() * inputs.size(0)
             
-        train_loss /= len(train_dataset)
+        train_loss /= len(train_loader.dataset)
         
+        # --- Eval ---
         model.eval()
         val_loss = 0.0
-        all_preds = []
-        all_labels = []
+        all_preds, all_labels = [], []
         
         with torch.no_grad():
             for inputs, labels in val_loader:
@@ -304,20 +226,127 @@ def main():
                 all_preds.extend(preds.cpu().numpy())
                 all_labels.extend(labels.cpu().numpy())
                 
-        val_loss /= len(val_dataset)
-        
+        val_loss /= len(val_loader.dataset)
         macro_f1 = f1_score(all_labels, all_preds, average='macro', zero_division=0)
         balanced_acc = balanced_accuracy_score(all_labels, all_preds)
         
-        logger.info(f"Epoch [{epoch:02d}/{args.epochs}] | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | Macro-F1: {macro_f1:.4f} | Balanced Acc: {balanced_acc:.4f}")
+        logger.info(f"[Fold {fold}] Epoch [{epoch:02d}/{args.epochs}] | Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f} | F1: {macro_f1:.4f} | B-Acc: {balanced_acc:.4f}")
         
         if macro_f1 > best_f1:
             best_f1 = macro_f1
-            torch.save(model.state_dict(), os.path.join(run_dir, 'best.pth'))
-            logger.info(f"--> Saved new best model with Macro-F1: {best_f1:.4f}")
+            torch.save(model.state_dict(), os.path.join(fold_dir, 'best.pth'))
+            logger.info(f"[Fold {fold}] --> Saved new best model (F1: {best_f1:.4f})")
             
-    torch.save(model.state_dict(), os.path.join(run_dir, 'last.pth'))
-    logger.info("Training completed. Last model saved.")
+    torch.save(model.state_dict(), os.path.join(fold_dir, 'last.pth'))
+    return best_f1
+
+def main():
+    parser = argparse.ArgumentParser(description="K-Fold LoRA Fine-tuning with DINOv2")
+    parser.add_argument('--data_path', type=str, default='~/autodl-tmp/data/train_few_shot/', help='Path to dataset')
+    parser.add_argument('--weight_path', type=str, default='~/autodl-tmp/weights/dinov2_small.bin', help='Path to offline weights')
+    parser.add_argument('--name', type=str, default=None, help='Experiment name')
+    parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
+    parser.add_argument('--epochs', type=int, default=50, help='Number of epochs per fold')
+    parser.add_argument('--lr', type=float, default=5e-4, help='Learning rate')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed')
+    parser.add_argument('--num_workers', type=int, default=4, help='Dataloader workers')
+    parser.add_argument('--k_folds', type=int, default=5, help='Number of folds for Cross Validation')
+    
+    # LoRA args
+    parser.add_argument('--lora_r', type=int, default=8)
+    parser.add_argument('--lora_alpha', type=int, default=16)
+    parser.add_argument('--lora_dropout', type=float, default=0.1)
+    
+    # Augmentation args
+    parser.add_argument('--no_hflip', action='store_true')
+    parser.add_argument('--no_vflip', action='store_true')
+    parser.add_argument('--no_rotate', action='store_true')
+    parser.add_argument('--translate', type=float, default=0.1)
+    parser.add_argument('--rotate_pad_mode', type=str, default='reflect')
+    parser.add_argument('--color_jitter', type=float, default=0.2)
+    parser.add_argument('--mixup_alpha', type=float, default=0.8)
+    parser.add_argument('--mixup_cutoff', type=float, default=0.2)
+    
+    args = parser.parse_args()
+    args.data_path = os.path.expanduser(args.data_path)
+    args.weight_path = os.path.expanduser(args.weight_path)
+    
+    run_dir = get_run_dir(base_dir="runs/train", name=args.name)
+    main_logger = setup_logger(run_dir, 'main_run.log')
+    
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
+
+    main_logger.info("="*50)
+    main_logger.info(f"K-Fold Experiment Started. Main directory: {run_dir}")
+    main_logger.info(f"Using {args.k_folds}-Fold Stratified Cross Validation")
+    main_logger.info("="*50)
+
+    # Setup Transforms
+    train_transform_list = []
+    if not args.no_hflip: train_transform_list.append(transforms.RandomHorizontalFlip())
+    if not args.no_vflip: train_transform_list.append(transforms.RandomVerticalFlip())
+    if not args.no_rotate or args.translate > 0:
+        train_transform_list.append(SafeRandomAffine(enable_rotate=not args.no_rotate, translate_frac=args.translate, mode=args.rotate_pad_mode))
+    if args.color_jitter > 0:
+        train_transform_list.append(transforms.ColorJitter(brightness=args.color_jitter, contrast=args.color_jitter))
+        
+    train_transform_list.extend([
+        transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+    ])
+    train_transform = transforms.Compose(train_transform_list)
+    val_transform = transforms.Compose([
+        transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
+    ])
+
+    # Load Full Dataset
+    full_dataset = datasets.ImageFolder(root=args.data_path, transform=None)
+    num_classes = len(full_dataset.classes)
+    targets = full_dataset.targets
+    
+    # 5-Fold Stratified Splitting
+    skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
+    fold_results = []
+    
+    for fold, (train_idx, val_idx) in enumerate(skf.split(np.zeros(len(targets)), targets), 1):
+        fold_dir = os.path.join(run_dir, f"fold_{fold}")
+        os.makedirs(fold_dir, exist_ok=True)
+        fold_logger = setup_logger(fold_dir, f'fold_{fold}.log')
+        
+        fold_logger.info(f"\n--- Preparing Fold {fold}/{args.k_folds} ---")
+        
+        train_dataset = DatasetWrapper(full_dataset, train_idx, transform=train_transform)
+        val_dataset = DatasetWrapper(full_dataset, val_idx, transform=val_transform)
+        
+        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+        val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+        
+        if fold == 1: # Only save augmentation preview for the first fold
+            save_augmentation_preview(train_loader, run_dir, main_logger, num_images=16)
+
+        # Train the fold
+        best_fold_f1 = train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, fold_logger)
+        fold_results.append(best_fold_f1)
+        
+        main_logger.info(f"Fold {fold} Finished. Best F1: {best_fold_f1:.4f}")
+
+    # Log Final CV Results
+    main_logger.info("="*50)
+    main_logger.info("FINAL K-FOLD CROSS VALIDATION RESULTS:")
+    for f, score in enumerate(fold_results, 1):
+        main_logger.info(f"  Fold {f}: {score:.4f}")
+    
+    avg_f1 = np.mean(fold_results)
+    std_f1 = np.std(fold_results)
+    main_logger.info("-" * 20)
+    main_logger.info(f"  Average Macro-F1 : {avg_f1:.4f} ± {std_f1:.4f}")
+    main_logger.info("="*50)
 
 if __name__ == "__main__":
     main()
