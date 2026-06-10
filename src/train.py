@@ -138,6 +138,24 @@ class SafeRandomAffine:
             img_transformed = F_t.affine(img_padded, angle=angle, translate=translations, scale=1.0, shear=0.0)
             return F_t.center_crop(img_transformed, (h, w))
 
+class SafeElasticTransform:
+    def __init__(self, alpha=25.0, sigma=4.0, mode='reflect'):
+        self.transform = transforms.ElasticTransform(alpha=alpha, sigma=sigma)
+        self.mode = mode
+        self.pad_mode = 'constant' if mode == 'zeros' else mode
+        # Alpha dictates maximum potential displacement, so padding by alpha is safe
+        self.pad_size = int(alpha)
+
+    def __call__(self, img):
+        if self.pad_mode == 'constant':
+            return self.transform(img)
+            
+        w, h = img.size
+        pad_p = self.pad_size
+        img_padded = F_t.pad(img, (pad_p, pad_p, pad_p, pad_p), padding_mode=self.pad_mode)
+        img_transformed = self.transform(img_padded)
+        return F_t.center_crop(img_transformed, (h, w))
+
 def mixup_data(x, y, alpha=0.8):
     if alpha > 0:
         lam = np.random.beta(alpha, alpha)
@@ -309,6 +327,11 @@ def main():
     
     run_dir = get_run_dir(base_dir="runs/train", name=args.name)
     main_logger = setup_logger(run_dir, 'main_run.log')
+
+    main_logger.info("="*50)
+    main_logger.info("Experiment Arguments (Hyperparameters):")
+    for arg_name, arg_value in sorted(vars(args).items()):
+        main_logger.info(f"  {arg_name:<18}: {arg_value}")
     
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
@@ -334,7 +357,7 @@ def main():
     if args.elastic_prob > 0:
         train_transform_list.append(
             transforms.RandomApply(
-                [transforms.ElasticTransform(alpha=args.elastic_alpha, sigma=args.elastic_sigma)],
+                [SafeElasticTransform(alpha=args.elastic_alpha, sigma=args.elastic_sigma, mode=args.rotate_pad_mode)],
                 p=args.elastic_prob
             )
         )
