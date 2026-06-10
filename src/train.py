@@ -12,7 +12,7 @@ import torchvision
 import matplotlib.pyplot as plt
 import timm
 from sklearn.metrics import f1_score, balanced_accuracy_score
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from peft import LoraConfig, get_peft_model
 
 def get_run_dir(base_dir="runs/train", name=None):
@@ -193,7 +193,7 @@ def save_augmentation_preview(loader, run_dir, logger, num_images=16):
 # ==========================================
 # Core Training Function (For a single fold)
 # ==========================================
-def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logger):
+def train_fold(fold, train_loader, val_loader, test_loader, args, fold_dir, num_classes, logger):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # 1. Re-initialize Model entirely for this fold
@@ -283,7 +283,27 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
         scheduler.step()
             
     torch.save(model.state_dict(), os.path.join(fold_dir, 'last.pth'))
-    return best_f1
+    
+    # --- Final Evaluation on Test Set ---
+    logger.info(f"[Fold {fold}] Evaluating best validation model on Test Set...")
+    model.load_state_dict(torch.load(os.path.join(fold_dir, 'best.pth')))
+    model.eval()
+    
+    test_preds, test_labels = [], []
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            preds = torch.argmax(outputs, dim=1)
+            
+            test_preds.extend(preds.cpu().numpy())
+            test_labels.extend(labels.cpu().numpy())
+            
+    test_f1 = f1_score(test_labels, test_preds, average='macro', zero_division=0)
+    test_bacc = balanced_accuracy_score(test_labels, test_preds)
+    logger.info(f"[Fold {fold}] Test Set Results -> F1: {test_f1:.4f} | B-Acc: {test_bacc:.4f}")
+    
+    return best_f1, test_f1
 
 def main():
     parser = argparse.ArgumentParser(description="K-Fold LoRA Fine-tuning with DINOv2")
@@ -295,6 +315,7 @@ def main():
     parser.add_argument('--lr', type=float, default=5e-4, help='Learning rate (Max LR for Cosine)')
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
     parser.add_argument('--num_workers', type=int, default=4, help='Dataloader workers')
+    parser.add_argument('--test_size', type=float, default=0.2, help='Ratio of data reserved for testing')
     parser.add_argument('--k_folds', type=int, default=7, help='Number of folds for Cross Validation (Default: 7)')
     
     # Optimizer & Loss args
@@ -341,7 +362,7 @@ def main():
     main_logger.info("="*50)
     main_logger.info(f"Phase 2.5: Ultimate K-Fold Experiment Started.")
     main_logger.info(f"Logs & Models saving to: {run_dir}")
-    main_logger.info(f"Using {args.k_folds}-Fold Stratified Cross Validation")
+    main_logger.info(f"Test Split Size: {args.test_size*100}% | CV on remaining: {args.k_folds}-Fold Stratified")
     main_logger.info("="*50)
 
     # Setup Transforms
@@ -384,16 +405,32 @@ def main():
     num_classes = len(full_dataset.classes)
     targets = full_dataset.targets
     
-    # K-Fold Stratified Splitting
-    skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
-    fold_results = []
+    # Train/Test Splitting (Global)
+    indices = np.arange(len(targets))
+    train_val_idx, test_idx = train_test_split(
+        indices, test_size=args.test_size, stratify=targets, random_state=args.seed
+    )
+    train_val_targets = [targets[i] for i in train_val_idx]
     
-    for fold, (train_idx, val_idx) in enumerate(skf.split(np.zeros(len(targets)), targets), 1):
+    # Setup global Test Loader
+    test_dataset = DatasetWrapper(full_dataset, test_idx, transform=val_transform)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+
+    # K-Fold Stratified Splitting on Train+Val subset
+    skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
+    val_results = []
+    test_results = []
+    
+    for fold, (train_idx_rel, val_idx_rel) in enumerate(skf.split(np.zeros(len(train_val_targets)), train_val_targets), 1):
         fold_dir = os.path.join(run_dir, f"fold_{fold}")
         os.makedirs(fold_dir, exist_ok=True)
         fold_logger = setup_logger(fold_dir, f'fold_{fold}.log')
         
         fold_logger.info(f"\n--- Preparing Fold {fold}/{args.k_folds} ---")
+        
+        # Map relative fold indices back to absolute dataset indices
+        train_idx = train_val_idx[train_idx_rel]
+        val_idx = train_val_idx[val_idx_rel]
         
         train_dataset = DatasetWrapper(full_dataset, train_idx, transform=train_transform)
         val_dataset = DatasetWrapper(full_dataset, val_idx, transform=val_transform)
@@ -405,21 +442,27 @@ def main():
             save_augmentation_preview(train_loader, run_dir, main_logger, num_images=16)
 
         # Train the fold
-        best_fold_f1 = train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, fold_logger)
-        fold_results.append(best_fold_f1)
+        best_val_f1, fold_test_f1 = train_fold(fold, train_loader, val_loader, test_loader, args, fold_dir, num_classes, fold_logger)
         
-        main_logger.info(f"Fold {fold} Finished. Best F1: {best_fold_f1:.4f}")
+        val_results.append(best_val_f1)
+        test_results.append(fold_test_f1)
+        
+        main_logger.info(f"Fold {fold} Finished. Best Val F1: {best_val_f1:.4f} | Test F1: {fold_test_f1:.4f}")
 
     # Log Final CV Results
     main_logger.info("="*50)
     main_logger.info("FINAL K-FOLD CROSS VALIDATION RESULTS:")
-    for f, score in enumerate(fold_results, 1):
-        main_logger.info(f"  Fold {f}: {score:.4f}")
+    for f, (v_score, t_score) in enumerate(zip(val_results, test_results), 1):
+        main_logger.info(f"  Fold {f}: Val F1 = {v_score:.4f} | Test F1 = {t_score:.4f}")
     
-    avg_f1 = np.mean(fold_results)
-    std_f1 = np.std(fold_results)
+    avg_val_f1 = np.mean(val_results)
+    std_val_f1 = np.std(val_results)
+    avg_test_f1 = np.mean(test_results)
+    std_test_f1 = np.std(test_results)
+    
     main_logger.info("-" * 20)
-    main_logger.info(f"  Average Macro-F1 : {avg_f1:.4f} ± {std_f1:.4f}")
+    main_logger.info(f"  Average Validation Macro-F1 : {avg_val_f1:.4f} ± {std_val_f1:.4f}")
+    main_logger.info(f"  Average Test Macro-F1       : {avg_test_f1:.4f} ± {std_test_f1:.4f}")
     main_logger.info("="*50)
 
 if __name__ == "__main__":
