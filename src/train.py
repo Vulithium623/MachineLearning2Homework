@@ -1,7 +1,11 @@
 import os
+import math
 import argparse
 import logging
 import numpy as np
+import pandas as pd
+from PIL import Image
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -15,7 +19,7 @@ from sklearn.metrics import f1_score, balanced_accuracy_score
 from sklearn.model_selection import StratifiedKFold
 from peft import LoraConfig, get_peft_model
 
-def get_run_dir(base_dir="runs/train", name=None):
+def get_run_dir(base_dir="runs/train_pseudo", name=None):
     os.makedirs(base_dir, exist_ok=True)
     if name is None:
         i = 1
@@ -40,7 +44,7 @@ def get_run_dir(base_dir="runs/train", name=None):
 def setup_logger(run_dir, log_filename='run.log'):
     logger = logging.getLogger(f"Experiment_{run_dir}")
     logger.setLevel(logging.INFO)
-    logger.handlers = [] # Clear existing handlers
+    logger.handlers = []
     
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     
@@ -55,42 +59,8 @@ def setup_logger(run_dir, log_filename='run.log'):
     return logger
 
 # ==========================================
-# Focal Loss Implementation
+# Datasets & Transforms
 # ==========================================
-class FocalLoss(nn.Module):
-    def __init__(self, gamma=2.0, reduction='mean'):
-        super(FocalLoss, self).__init__()
-        self.gamma = gamma
-        self.reduction = reduction
-        self.ce_loss = nn.CrossEntropyLoss(reduction='none')
-
-    def forward(self, inputs, targets):
-        log_pt = -self.ce_loss(inputs, targets)
-        pt = torch.exp(log_pt)
-        focal_loss = -((1 - pt) ** self.gamma) * log_pt
-
-        if self.reduction == 'mean':
-            return focal_loss.mean()
-        elif self.reduction == 'sum':
-            return focal_loss.sum()
-        else:
-            return focal_loss
-
-class CustomViTModel(nn.Module):
-    def __init__(self, backbone_name, weight_path, num_classes):
-        super().__init__()
-        self.backbone = timm.create_model(
-            backbone_name, 
-            pretrained=False, 
-            num_classes=0, 
-            checkpoint_path=weight_path
-        )
-        self.head = nn.Linear(384, num_classes)
-
-    def forward(self, x):
-        features = self.backbone(x)
-        return self.head(features)
-
 class DatasetWrapper(Dataset):
     def __init__(self, subset_dataset, indices, transform=None):
         self.subset_dataset = subset_dataset
@@ -102,6 +72,21 @@ class DatasetWrapper(Dataset):
 
     def __getitem__(self, idx):
         img, label = self.subset_dataset[self.indices[idx]]
+        if self.transform:
+            img = self.transform(img)
+        return img, label
+
+class PseudoDataset(Dataset):
+    def __init__(self, data_list, transform=None):
+        self.data_list = data_list
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data_list)
+
+    def __getitem__(self, idx):
+        img_path, label = self.data_list[idx]
+        img = Image.open(img_path).convert('RGB')
         if self.transform:
             img = self.transform(img)
         return img, label
@@ -143,7 +128,6 @@ class SafeElasticTransform:
         self.transform = transforms.ElasticTransform(alpha=alpha, sigma=sigma)
         self.mode = mode
         self.pad_mode = 'constant' if mode == 'zeros' else mode
-        # Alpha dictates maximum potential displacement, so padding by alpha is safe
         self.pad_size = int(alpha)
 
     def __call__(self, img):
@@ -191,12 +175,48 @@ def save_augmentation_preview(loader, run_dir, logger, num_images=16):
     plt.close()
 
 # ==========================================
-# Core Training Function (For a single fold)
+# Models & Loss
 # ==========================================
-def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logger):
+class FocalLoss(nn.Module):
+    def __init__(self, gamma=2.0, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.reduction = reduction
+        self.ce_loss = nn.CrossEntropyLoss(reduction='none')
+
+    def forward(self, inputs, targets):
+        log_pt = -self.ce_loss(inputs, targets)
+        pt = torch.exp(log_pt)
+        focal_loss = -((1 - pt) ** self.gamma) * log_pt
+
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        else:
+            return focal_loss
+
+class CustomViTModel(nn.Module):
+    def __init__(self, backbone_name, weight_path, num_classes):
+        super().__init__()
+        self.backbone = timm.create_model(
+            backbone_name, 
+            pretrained=False, 
+            num_classes=0, 
+            checkpoint_path=weight_path
+        )
+        self.head = nn.Linear(384, num_classes)
+
+    def forward(self, x):
+        features = self.backbone(x)
+        return self.head(features)
+
+# ==========================================
+# Core Training Function
+# ==========================================
+def train_fold(fold, mixed_train_loader, pure_train_loader, val_loader, args, fold_dir, num_classes, logger):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    # 1. Re-initialize Model entirely for this fold
     base_model = CustomViTModel(
         backbone_name='vit_small_patch14_dinov2.lvd142m', 
         weight_path=args.weight_path,
@@ -212,30 +232,35 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
     )
     model = get_peft_model(base_model, lora_config).to(device)
     
-    # 2. Re-initialize Optimizer (AdamW), Loss (Focal Loss), and Scheduler (Cosine)
     criterion = FocalLoss(gamma=args.focal_gamma)
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
 
     best_f1 = 0.0
-    mixup_disabled_flag = False
-    cutoff_epoch = args.epochs - int(args.epochs * args.mixup_cutoff) if args.mixup_cutoff > 0 else args.epochs + 1
+    washout_start_epoch = args.epochs - args.washout_epochs
     
     logger.info(f"=== Starting Training for Fold {fold} ===")
     
     for epoch in range(1, args.epochs + 1):
-        if args.mixup_alpha > 0 and args.mixup_cutoff > 0 and epoch > cutoff_epoch and not mixup_disabled_flag:
-            logger.info(f"[Fold {fold}] Epoch {epoch}: MixUp is now DISABLED!")
-            mixup_disabled_flag = True
-
+        in_washout = (args.washout_epochs > 0) and (epoch > washout_start_epoch)
+        
+        if in_washout:
+            if epoch == washout_start_epoch + 1:
+                logger.info(f"[Fold {fold}] Epoch {epoch}: Entering Wash-out Phase! Using PURE true data. MixUp remains active.")
+            current_loader = pure_train_loader
+        else:
+            current_loader = mixed_train_loader
+        
         # --- Train ---
         model.train()
         train_loss = 0.0
-        for inputs, labels in train_loader:
+        
+        for inputs, labels in current_loader:
             inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
             
-            mixup_active = (args.mixup_alpha > 0) and (not mixup_disabled_flag)
+            mixup_active = (args.mixup_alpha > 0)
+            
             if mixup_active:
                 inputs, targets_a, targets_b, lam = mixup_data(inputs, labels, args.mixup_alpha)
                 outputs = model(inputs)
@@ -248,7 +273,7 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
             optimizer.step()
             train_loss += loss.item() * inputs.size(0)
             
-        train_loss /= len(train_loader.dataset)
+        train_loss /= len(current_loader.dataset)
         current_lr = scheduler.get_last_lr()[0]
         
         # --- Eval ---
@@ -279,34 +304,40 @@ def train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, logg
             torch.save(model.state_dict(), os.path.join(fold_dir, 'best.pth'))
             logger.info(f"[Fold {fold}] --> Saved new best model (F1: {best_f1:.4f})")
             
-        # Step the Cosine Scheduler at the end of the epoch
         scheduler.step()
             
     torch.save(model.state_dict(), os.path.join(fold_dir, 'last.pth'))
     return best_f1
 
 def main():
-    parser = argparse.ArgumentParser(description="K-Fold LoRA Fine-tuning with DINOv2")
-    parser.add_argument('--data_path', type=str, default='~/autodl-tmp/data/train_few_shot/', help='Path to dataset')
+    parser = argparse.ArgumentParser(description="K-Fold LoRA Fine-tuning with Pseudo Labels")
+    
+    # Base Data Args
+    parser.add_argument('--data_path', type=str, default='~/autodl-tmp/data/train_few_shot/', help='Path to true dataset')
     parser.add_argument('--weight_path', type=str, default='~/autodl-tmp/weights/dinov2_small.bin', help='Path to offline weights')
+    
+    # Pseudo Label Args
+    parser.add_argument('--unlabeled_data_path', type=str, default='~/autodl-tmp/data/test_shuffled/', help='Path to unlabeled images')
+    parser.add_argument('--pseudo_csv_path', type=str, default='./runs/pseudo/2/pseudo_labels.csv', help='Path to pseudo labels CSV')
+    parser.add_argument('--pseudo_prob_thresh', type=float, default=0.85, help='Threshold for pseudo label confidence')
+    parser.add_argument('--washout_epochs', type=int, default=5, help='Number of epochs at the end to train only on true labels')
+    
+    # Training Args
     parser.add_argument('--name', type=str, default=None, help='Experiment name')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
     parser.add_argument('--epochs', type=int, default=50, help='Number of epochs per fold')
     parser.add_argument('--lr', type=float, default=5e-4, help='Learning rate (Max LR for Cosine)')
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
     parser.add_argument('--num_workers', type=int, default=4, help='Dataloader workers')
-    parser.add_argument('--k_folds', type=int, default=7, help='Number of folds for Cross Validation (Default: 7)')
+    parser.add_argument('--k_folds', type=int, default=7, help='Number of folds for CV')
     
-    # Optimizer & Loss args
-    parser.add_argument('--weight_decay', type=float, default=1e-4, help='Weight decay for AdamW')
-    parser.add_argument('--focal_gamma', type=float, default=2.0, help='Gamma value for Focal Loss')
-    
-    # LoRA args
+    parser.add_argument('--weight_decay', type=float, default=1e-4)
+    parser.add_argument('--focal_gamma', type=float, default=2.0)
     parser.add_argument('--lora_r', type=int, default=8)
     parser.add_argument('--lora_alpha', type=int, default=16)
     parser.add_argument('--lora_dropout', type=float, default=0.1)
     
-    # Augmentation args
+    # Augmentation Args
     parser.add_argument('--no_hflip', action='store_true')
     parser.add_argument('--no_vflip', action='store_true')
     parser.add_argument('--no_rotate', action='store_true')
@@ -314,18 +345,18 @@ def main():
     parser.add_argument('--rotate_pad_mode', type=str, default='reflect')
     parser.add_argument('--color_jitter', type=float, default=0.2)
     parser.add_argument('--mixup_alpha', type=float, default=0.8)
-    parser.add_argument('--mixup_cutoff', type=float, default=0.2)
     
-    # Medical Elastic Transform
-    parser.add_argument('--elastic_prob', type=float, default=0.5, help='Probability to apply Elastic Transform')
-    parser.add_argument('--elastic_alpha', type=float, default=25.0, help='Elastic Transform Alpha')
-    parser.add_argument('--elastic_sigma', type=float, default=4.0, help='Elastic Transform Sigma')
+    parser.add_argument('--elastic_prob', type=float, default=0.5)
+    parser.add_argument('--elastic_alpha', type=float, default=25.0)
+    parser.add_argument('--elastic_sigma', type=float, default=4.0)
     
     args = parser.parse_args()
     args.data_path = os.path.expanduser(args.data_path)
     args.weight_path = os.path.expanduser(args.weight_path)
+    args.unlabeled_data_path = os.path.expanduser(args.unlabeled_data_path)
+    args.pseudo_csv_path = os.path.expanduser(args.pseudo_csv_path)
     
-    run_dir = get_run_dir(base_dir="runs/train", name=args.name)
+    run_dir = get_run_dir(base_dir="runs/train_pseudo", name=args.name)
     main_logger = setup_logger(run_dir, 'main_run.log')
 
     main_logger.info("="*50)
@@ -339,34 +370,57 @@ def main():
         torch.cuda.manual_seed_all(args.seed)
 
     main_logger.info("="*50)
-    main_logger.info(f"Phase 2.5: Ultimate K-Fold Experiment Started.")
+    main_logger.info(f"Phase 3: Semi-Supervised Training Started (Pseudo-labels + Wash-out).")
     main_logger.info(f"Logs & Models saving to: {run_dir}")
-    main_logger.info(f"Using {args.k_folds}-Fold Stratified Cross Validation")
     main_logger.info("="*50)
+
+    # Load Full True Dataset
+    full_dataset = datasets.ImageFolder(root=args.data_path, transform=None)
+    num_classes = len(full_dataset.classes)
+    targets = full_dataset.targets
+    
+    # Parse and Filter Pseudo Labels
+    main_logger.info(f"Parsing pseudo-labels from: {args.pseudo_csv_path}")
+    df_pseudo = pd.read_csv(args.pseudo_csv_path)
+    model_class_cols = [c for c in df_pseudo.columns if c.endswith('_Class') and c != 'Ensemble_Class']
+    
+    cond_agree = df_pseudo[model_class_cols].nunique(axis=1) == 1
+    cond_prob = df_pseudo['Ensemble_Prob'] > args.pseudo_prob_thresh
+    df_filtered = df_pseudo[cond_agree & cond_prob]
+    
+    class_counts = [len(df_filtered[df_filtered['Ensemble_Class'] == c]) for c in range(num_classes)]
+    n_min = min(class_counts)
+    
+    pseudo_data_list = []
+    if n_min == 0:
+        main_logger.warning("One or more classes have 0 pseudo-labels under the current threshold! No pseudo-labels will be used.")
+    else:
+        selected_rows = []
+        for c in range(num_classes):
+            c_df = df_filtered[df_filtered['Ensemble_Class'] == c]
+            c_df_sorted = c_df.sort_values(by='Ensemble_Prob', ascending=False)
+            selected_rows.append(c_df_sorted.head(n_min))
+        
+        final_pseudo_df = pd.concat(selected_rows)
+        for _, row in final_pseudo_df.iterrows():
+            img_name = row['Image_Name']
+            label = int(row['Ensemble_Class'])
+            full_path = os.path.join(args.unlabeled_data_path, img_name)
+            pseudo_data_list.append((full_path, label))
+            
+        main_logger.info(f"Successfully filtered pseudo-labels. Class-balanced top-K: {n_min}. Total pseudo images: {len(pseudo_data_list)}")
 
     # Setup Transforms
     train_transform_list = []
-    
-    # 1. Geometric transforms
     if not args.no_hflip: train_transform_list.append(transforms.RandomHorizontalFlip())
     if not args.no_vflip: train_transform_list.append(transforms.RandomVerticalFlip())
     if not args.no_rotate or args.translate > 0:
         train_transform_list.append(SafeRandomAffine(enable_rotate=not args.no_rotate, translate_frac=args.translate, mode=args.rotate_pad_mode))
-        
-    # 2. Medical Elastic Transform (Squeeze and Stretch)
     if args.elastic_prob > 0:
-        train_transform_list.append(
-            transforms.RandomApply(
-                [SafeElasticTransform(alpha=args.elastic_alpha, sigma=args.elastic_sigma, mode=args.rotate_pad_mode)],
-                p=args.elastic_prob
-            )
-        )
-        
-    # 3. Color transforms
+        train_transform_list.append(transforms.RandomApply([SafeElasticTransform(alpha=args.elastic_alpha, sigma=args.elastic_sigma, mode=args.rotate_pad_mode)], p=args.elastic_prob))
     if args.color_jitter > 0:
         train_transform_list.append(transforms.ColorJitter(brightness=args.color_jitter, contrast=args.color_jitter))
         
-    # 4. Standard Base Resize & Normalize
     train_transform_list.extend([
         transforms.Resize((518, 518), interpolation=transforms.InterpolationMode.BICUBIC),
         transforms.ToTensor(),
@@ -379,12 +433,6 @@ def main():
         transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
     ])
 
-    # Load Full Dataset
-    full_dataset = datasets.ImageFolder(root=args.data_path, transform=None)
-    num_classes = len(full_dataset.classes)
-    targets = full_dataset.targets
-    
-    # K-Fold Stratified Splitting
     skf = StratifiedKFold(n_splits=args.k_folds, shuffle=True, random_state=args.seed)
     fold_results = []
     
@@ -395,22 +443,34 @@ def main():
         
         fold_logger.info(f"\n--- Preparing Fold {fold}/{args.k_folds} ---")
         
-        train_dataset = DatasetWrapper(full_dataset, train_idx, transform=train_transform)
-        val_dataset = DatasetWrapper(full_dataset, val_idx, transform=val_transform)
+        true_train_dataset = DatasetWrapper(full_dataset, train_idx, transform=train_transform)
+        true_val_dataset = DatasetWrapper(full_dataset, val_idx, transform=val_transform)
+        pseudo_dataset = PseudoDataset(pseudo_data_list, transform=train_transform)
         
-        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
-        val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
-        
-        if fold == 1: # Only save augmentation preview for the first fold
-            save_augmentation_preview(train_loader, run_dir, main_logger, num_images=16)
+        # Calculate Oversampling Multiplier for True Data
+        num_true_train = len(true_train_dataset)
+        num_pseudo = len(pseudo_dataset)
+        #multiplier = max(1, math.ceil(num_pseudo / num_true_train)) if num_pseudo > 0 else 1
+        multiplier = 5
 
-        # Train the fold
-        best_fold_f1 = train_fold(fold, train_loader, val_loader, args, fold_dir, num_classes, fold_logger)
+        fold_logger.info(f"Base True Samples: {num_true_train} | Pseudo Samples: {num_pseudo}")
+        if num_pseudo > 0:
+            fold_logger.info(f"Oversampling True Data by factor of {multiplier} to balance Mixed Batch.")
+            
+        mixed_train_dataset = torch.utils.data.ConcatDataset([true_train_dataset] * multiplier + [pseudo_dataset])
+        
+        mixed_train_loader = DataLoader(mixed_train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+        pure_train_loader = DataLoader(true_train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+        val_loader = DataLoader(true_val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+        
+        if fold == 1: 
+            save_augmentation_preview(mixed_train_loader, run_dir, main_logger, num_images=16)
+
+        best_fold_f1 = train_fold(fold, mixed_train_loader, pure_train_loader, val_loader, args, fold_dir, num_classes, fold_logger)
         fold_results.append(best_fold_f1)
         
         main_logger.info(f"Fold {fold} Finished. Best F1: {best_fold_f1:.4f}")
 
-    # Log Final CV Results
     main_logger.info("="*50)
     main_logger.info("FINAL K-FOLD CROSS VALIDATION RESULTS:")
     for f, score in enumerate(fold_results, 1):

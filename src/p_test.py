@@ -83,7 +83,7 @@ def process_and_print_stats(csv_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Analyze pseudo labels CSV")
-    parser.add_argument('--csv_path', type=str, default='./runs/pseudo/2/pseudo_labels.csv', 
+    parser.add_argument('--csv_path', type=str, default='./runs/pseudo/4/pseudo_labels.csv', 
                         help='Path to the pseudo_labels.csv file')
     args = parser.parse_args()
     
