@@ -319,7 +319,7 @@ def main():
     # Pseudo Label Args
     parser.add_argument('--unlabeled_data_path', type=str, default='~/autodl-tmp/data/test_shuffled/', help='Path to unlabeled images')
     parser.add_argument('--pseudo_csv_path', type=str, default='./runs/pseudo/2/pseudo_labels.csv', help='Path to pseudo labels CSV')
-    parser.add_argument('--pseudo_prob_thresh', type=float, default=0.85, help='Threshold for pseudo label confidence')
+    parser.add_argument('--pseudo_prob_thresh', type=float, default=0.85, help='Threshold for pseudo label confidence (legacy)')
     parser.add_argument('--washout_epochs', type=int, default=5, help='Number of epochs at the end to train only on true labels')
     
     # Training Args
@@ -385,22 +385,47 @@ def main():
     model_class_cols = [c for c in df_pseudo.columns if c.endswith('_Class') and c != 'Ensemble_Class']
     
     cond_agree = df_pseudo[model_class_cols].nunique(axis=1) == 1
-    cond_prob = df_pseudo['Ensemble_Prob'] > args.pseudo_prob_thresh
-    df_filtered = df_pseudo[cond_agree & cond_prob]
+    df_agree = df_pseudo[cond_agree].copy()
     
-    class_counts = [len(df_filtered[df_filtered['Ensemble_Class'] == c]) for c in range(num_classes)]
-    n_min = min(class_counts)
+    target_per_class = 1200
+    target_hard = 800  # 0.75 <= prob < 0.90
+    target_med = 400   # 0.90 <= prob <= 0.95
     
+    class_dfs = []
+    for c in range(num_classes):
+        df_c = df_agree[df_agree['Ensemble_Class'] == c]
+        
+        df_hard = df_c[(df_c['Ensemble_Prob'] >= 0.75) & (df_c['Ensemble_Prob'] < 0.90)]
+        df_med = df_c[(df_c['Ensemble_Prob'] >= 0.90) & (df_c['Ensemble_Prob'] <= 0.95)]
+        
+        sampled_hard = df_hard.sample(n=min(len(df_hard), target_hard), random_state=args.seed)
+        sampled_med = df_med.sample(n=min(len(df_med), target_med), random_state=args.seed)
+        
+        short_hard = target_hard - len(sampled_hard)
+        if short_hard > 0 and len(df_med) > target_med:
+            extra_med = df_med.drop(sampled_med.index).sample(n=min(len(df_med) - len(sampled_med), short_hard), random_state=args.seed)
+            sampled_med = pd.concat([sampled_med, extra_med])
+            
+        short_med = target_med - len(sampled_med)
+        if short_med > 0 and len(df_hard) > target_hard:
+            extra_hard = df_hard.drop(sampled_hard.index).sample(n=min(len(df_hard) - len(sampled_hard), short_med), random_state=args.seed)
+            sampled_hard = pd.concat([sampled_hard, extra_hard])
+            
+        class_dfs.append(pd.concat([sampled_hard, sampled_med]))
+        
+    n_min = min([len(df) for df in class_dfs])
     pseudo_data_list = []
+    
     if n_min == 0:
-        main_logger.warning("One or more classes have 0 pseudo-labels under the current threshold! No pseudo-labels will be used.")
+        main_logger.warning("One or more classes have 0 pseudo-labels under the current criteria! No pseudo-labels will be used.")
     else:
         selected_rows = []
-        for c in range(num_classes):
-            c_df = df_filtered[df_filtered['Ensemble_Class'] == c]
-            c_df_sorted = c_df.sort_values(by='Ensemble_Prob', ascending=False)
-            selected_rows.append(c_df_sorted.head(n_min))
-        
+        for df_c in class_dfs:
+            if len(df_c) > n_min:
+                selected_rows.append(df_c.sample(n=n_min, random_state=args.seed))
+            else:
+                selected_rows.append(df_c)
+                
         final_pseudo_df = pd.concat(selected_rows)
         for _, row in final_pseudo_df.iterrows():
             img_name = row['Image_Name']
