@@ -370,7 +370,7 @@ def main():
         torch.cuda.manual_seed_all(args.seed)
 
     main_logger.info("="*50)
-    main_logger.info(f"Phase 3: Semi-Supervised Training Started (Pseudo-labels + Wash-out).")
+    main_logger.info(f"Phase 4: Aggressive Semi-Supervised Training Started.")
     main_logger.info(f"Logs & Models saving to: {run_dir}")
     main_logger.info("="*50)
 
@@ -379,39 +379,41 @@ def main():
     num_classes = len(full_dataset.classes)
     targets = full_dataset.targets
     
-    # Parse and Filter Pseudo Labels
+    # Parse and Filter Pseudo Labels (Aggressive Version)
     main_logger.info(f"Parsing pseudo-labels from: {args.pseudo_csv_path}")
     df_pseudo = pd.read_csv(args.pseudo_csv_path)
     model_class_cols = [c for c in df_pseudo.columns if c.endswith('_Class') and c != 'Ensemble_Class']
     
-    cond_agree = df_pseudo[model_class_cols].nunique(axis=1) == 1
+    # Condition: At least 4 models must match the Ensemble_Class prediction
+    agreements = df_pseudo[model_class_cols].eq(df_pseudo['Ensemble_Class'], axis=0).sum(axis=1)
+    cond_agree = agreements >= 4
     df_agree = df_pseudo[cond_agree].copy()
     
-    target_per_class = 1200
-    target_hard = 800  # 0.75 <= prob < 0.90
-    target_med = 400   # 0.90 <= prob <= 0.95
+    target_hard = 700  # 0.70 <= prob < 0.85
+    target_easy = 700  # 0.85 <= prob <= 1.00
     
     class_dfs = []
     for c in range(num_classes):
         df_c = df_agree[df_agree['Ensemble_Class'] == c]
         
-        df_hard = df_c[(df_c['Ensemble_Prob'] >= 0.75) & (df_c['Ensemble_Prob'] < 0.90)]
-        df_med = df_c[(df_c['Ensemble_Prob'] >= 0.90) & (df_c['Ensemble_Prob'] <= 0.95)]
+        df_hard = df_c[(df_c['Ensemble_Prob'] >= 0.80) & (df_c['Ensemble_Prob'] < 0.9)]
+        df_easy = df_c[(df_c['Ensemble_Prob'] >= 0.9)]
         
         sampled_hard = df_hard.sample(n=min(len(df_hard), target_hard), random_state=args.seed)
-        sampled_med = df_med.sample(n=min(len(df_med), target_med), random_state=args.seed)
+        sampled_easy = df_easy.sample(n=min(len(df_easy), target_easy), random_state=args.seed)
         
+        # Fill missing quotas from the other pool if available
         short_hard = target_hard - len(sampled_hard)
-        if short_hard > 0 and len(df_med) > target_med:
-            extra_med = df_med.drop(sampled_med.index).sample(n=min(len(df_med) - len(sampled_med), short_hard), random_state=args.seed)
-            sampled_med = pd.concat([sampled_med, extra_med])
+        if short_hard > 0 and len(df_easy) > target_easy:
+            extra_easy = df_easy.drop(sampled_easy.index).sample(n=min(len(df_easy) - len(sampled_easy), short_hard), random_state=args.seed)
+            sampled_easy = pd.concat([sampled_easy, extra_easy])
             
-        short_med = target_med - len(sampled_med)
-        if short_med > 0 and len(df_hard) > target_hard:
-            extra_hard = df_hard.drop(sampled_hard.index).sample(n=min(len(df_hard) - len(sampled_hard), short_med), random_state=args.seed)
+        short_easy = target_easy - len(sampled_easy)
+        if short_easy > 0 and len(df_hard) > target_hard:
+            extra_hard = df_hard.drop(sampled_hard.index).sample(n=min(len(df_hard) - len(sampled_hard), short_easy), random_state=args.seed)
             sampled_hard = pd.concat([sampled_hard, extra_hard])
             
-        class_dfs.append(pd.concat([sampled_hard, sampled_med]))
+        class_dfs.append(pd.concat([sampled_hard, sampled_easy]))
         
     n_min = min([len(df) for df in class_dfs])
     pseudo_data_list = []
@@ -433,7 +435,7 @@ def main():
             full_path = os.path.join(args.unlabeled_data_path, img_name)
             pseudo_data_list.append((full_path, label))
             
-        main_logger.info(f"Successfully filtered pseudo-labels. Class-balanced top-K: {n_min}. Total pseudo images: {len(pseudo_data_list)}")
+        main_logger.info(f"Aggressive filtering completed. Class-balanced top-K: {n_min}. Total pseudo images: {len(pseudo_data_list)}")
 
     # Setup Transforms
     train_transform_list = []
@@ -475,7 +477,6 @@ def main():
         # Calculate Oversampling Multiplier for True Data
         num_true_train = len(true_train_dataset)
         num_pseudo = len(pseudo_dataset)
-        #multiplier = max(1, math.ceil(num_pseudo / num_true_train)) if num_pseudo > 0 else 1
         multiplier = 5
 
         fold_logger.info(f"Base True Samples: {num_true_train} | Pseudo Samples: {num_pseudo}")
