@@ -1,0 +1,7 @@
+2026-06-11 14:59:09,577 - INFO - 
+--- Preparing Fold 1/5 ---
+2026-06-11 14:59:09,577 - INFO - Base True Samples: 200 | Pseudo Samples: 6165
+2026-06-11 14:59:09,577 - INFO - Oversampling True Data by factor of 31 to balance Mixed Batch.
+2026-06-11 14:59:11,765 - INFO - === Starting Training for Fold 1 ===
+2026-06-11 15:01:09,947 - INFO - [Fold 1] Epoch [01/30] | LR: 1.00e-03 | Train Loss: 1.0411 | Val Loss: 0.9251 | F1: 0.6152 | B-Acc: 0.6400
+2026-06-11 15:01:10,055 - INFO - [Fold 1] --> Saved new best model (F1: 0.6152)

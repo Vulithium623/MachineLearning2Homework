@@ -1,0 +1,7 @@
+2026-06-13 19:30:27,932 - INFO - ==================================================
+2026-06-13 19:30:27,932 - INFO - Offline Knowledge Distillation Started
+2026-06-13 19:30:27,932 - INFO - ==================================================
+2026-06-13 19:30:27,932 - INFO - Found existing Soft Labels cache at ./runs/train_pseudo/pseudo_8/teacher_soft_labels_cache.pt. Skipping extraction.
+2026-06-13 19:30:30,854 - INFO - Initializing Student Model (r=32, alpha=64)
+2026-06-13 19:30:31,348 - INFO - ==================================================
+2026-06-13 19:30:31,348 - INFO - Beginning Fast Offline Knowledge Distillation

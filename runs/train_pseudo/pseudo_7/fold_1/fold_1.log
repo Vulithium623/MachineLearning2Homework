@@ -1,0 +1,39 @@
+2026-06-11 15:16:42,147 - INFO - 
+--- Preparing Fold 1/5 ---
+2026-06-11 15:16:42,147 - INFO - Base True Samples: 200 | Pseudo Samples: 5880
+2026-06-11 15:16:42,147 - INFO - Oversampling True Data by factor of 5 to balance Mixed Batch.
+2026-06-11 15:16:44,358 - INFO - === Starting Training for Fold 1 ===
+2026-06-11 15:17:51,226 - INFO - [Fold 1] Epoch [01/30] | LR: 1.00e-03 | Train Loss: 0.9860 | Val Loss: 1.0246 | F1: 0.5899 | B-Acc: 0.6000
+2026-06-11 15:17:51,309 - INFO - [Fold 1] --> Saved new best model (F1: 0.5899)
+2026-06-11 15:18:57,860 - INFO - [Fold 1] Epoch [02/30] | LR: 9.97e-04 | Train Loss: 0.8206 | Val Loss: 1.2999 | F1: 0.4211 | B-Acc: 0.4800
+2026-06-11 15:20:04,645 - INFO - [Fold 1] Epoch [03/30] | LR: 9.89e-04 | Train Loss: 0.7784 | Val Loss: 1.0255 | F1: 0.6797 | B-Acc: 0.6800
+2026-06-11 15:20:04,857 - INFO - [Fold 1] --> Saved new best model (F1: 0.6797)
+2026-06-11 15:21:11,542 - INFO - [Fold 1] Epoch [04/30] | LR: 9.76e-04 | Train Loss: 0.7758 | Val Loss: 1.1585 | F1: 0.5000 | B-Acc: 0.5400
+2026-06-11 15:22:18,287 - INFO - [Fold 1] Epoch [05/30] | LR: 9.57e-04 | Train Loss: 0.7471 | Val Loss: 1.0797 | F1: 0.5479 | B-Acc: 0.6000
+2026-06-11 15:23:25,094 - INFO - [Fold 1] Epoch [06/30] | LR: 9.33e-04 | Train Loss: 0.7587 | Val Loss: 0.9319 | F1: 0.5177 | B-Acc: 0.5400
+2026-06-11 15:24:31,750 - INFO - [Fold 1] Epoch [07/30] | LR: 9.05e-04 | Train Loss: 0.7206 | Val Loss: 0.8965 | F1: 0.7313 | B-Acc: 0.7200
+2026-06-11 15:24:31,863 - INFO - [Fold 1] --> Saved new best model (F1: 0.7313)
+2026-06-11 15:25:38,530 - INFO - [Fold 1] Epoch [08/30] | LR: 8.72e-04 | Train Loss: 0.7533 | Val Loss: 0.9202 | F1: 0.5886 | B-Acc: 0.6200
+2026-06-11 15:26:45,324 - INFO - [Fold 1] Epoch [09/30] | LR: 8.35e-04 | Train Loss: 0.7191 | Val Loss: 1.1215 | F1: 0.4915 | B-Acc: 0.5400
+2026-06-11 15:27:52,054 - INFO - [Fold 1] Epoch [10/30] | LR: 7.94e-04 | Train Loss: 0.7287 | Val Loss: 0.9332 | F1: 0.6860 | B-Acc: 0.6800
+2026-06-11 15:28:58,812 - INFO - [Fold 1] Epoch [11/30] | LR: 7.50e-04 | Train Loss: 0.7086 | Val Loss: 0.9610 | F1: 0.6375 | B-Acc: 0.6600
+2026-06-11 15:30:05,704 - INFO - [Fold 1] Epoch [12/30] | LR: 7.04e-04 | Train Loss: 0.6898 | Val Loss: 1.0415 | F1: 0.5861 | B-Acc: 0.6200
+2026-06-11 15:31:12,401 - INFO - [Fold 1] Epoch [13/30] | LR: 6.55e-04 | Train Loss: 0.6986 | Val Loss: 0.9469 | F1: 0.6132 | B-Acc: 0.6400
+2026-06-11 15:32:19,148 - INFO - [Fold 1] Epoch [14/30] | LR: 6.04e-04 | Train Loss: 0.6675 | Val Loss: 1.0410 | F1: 0.5909 | B-Acc: 0.6000
+2026-06-11 15:33:25,877 - INFO - [Fold 1] Epoch [15/30] | LR: 5.53e-04 | Train Loss: 0.6746 | Val Loss: 0.8026 | F1: 0.6781 | B-Acc: 0.6800
+2026-06-11 15:34:32,713 - INFO - [Fold 1] Epoch [16/30] | LR: 5.01e-04 | Train Loss: 0.6756 | Val Loss: 0.9601 | F1: 0.6066 | B-Acc: 0.6200
+2026-06-11 15:35:39,566 - INFO - [Fold 1] Epoch [17/30] | LR: 4.48e-04 | Train Loss: 0.6182 | Val Loss: 0.8342 | F1: 0.6924 | B-Acc: 0.7200
+2026-06-11 15:36:46,348 - INFO - [Fold 1] Epoch [18/30] | LR: 3.97e-04 | Train Loss: 0.6382 | Val Loss: 0.9694 | F1: 0.6045 | B-Acc: 0.6200
+2026-06-11 15:37:54,017 - INFO - [Fold 1] Epoch [19/30] | LR: 3.46e-04 | Train Loss: 0.6161 | Val Loss: 0.7313 | F1: 0.7131 | B-Acc: 0.7200
+2026-06-11 15:39:00,493 - INFO - [Fold 1] Epoch [20/30] | LR: 2.97e-04 | Train Loss: 0.6357 | Val Loss: 0.8332 | F1: 0.6099 | B-Acc: 0.6400
+2026-06-11 15:40:06,983 - INFO - [Fold 1] Epoch [21/30] | LR: 2.51e-04 | Train Loss: 0.5893 | Val Loss: 1.0533 | F1: 0.6000 | B-Acc: 0.6400
+2026-06-11 15:41:13,534 - INFO - [Fold 1] Epoch [22/30] | LR: 2.07e-04 | Train Loss: 0.5999 | Val Loss: 0.8720 | F1: 0.6488 | B-Acc: 0.6600
+2026-06-11 15:42:21,599 - INFO - [Fold 1] Epoch [23/30] | LR: 1.66e-04 | Train Loss: 0.6069 | Val Loss: 0.8428 | F1: 0.6917 | B-Acc: 0.7000
+2026-06-11 15:43:28,283 - INFO - [Fold 1] Epoch [24/30] | LR: 1.29e-04 | Train Loss: 0.5698 | Val Loss: 1.1341 | F1: 0.6316 | B-Acc: 0.6400
+2026-06-11 15:44:34,881 - INFO - [Fold 1] Epoch [25/30] | LR: 9.64e-05 | Train Loss: 0.5627 | Val Loss: 1.1406 | F1: 0.5772 | B-Acc: 0.6200
+2026-06-11 15:44:34,881 - INFO - [Fold 1] Epoch 26: Entering Wash-out Phase! Using PURE true data. MixUp remains active.
+2026-06-11 15:44:37,690 - INFO - [Fold 1] Epoch [26/30] | LR: 6.79e-05 | Train Loss: 0.5321 | Val Loss: 1.1808 | F1: 0.5725 | B-Acc: 0.6000
+2026-06-11 15:44:40,446 - INFO - [Fold 1] Epoch [27/30] | LR: 4.42e-05 | Train Loss: 0.6287 | Val Loss: 1.0853 | F1: 0.6305 | B-Acc: 0.6400
+2026-06-11 15:44:43,203 - INFO - [Fold 1] Epoch [28/30] | LR: 2.54e-05 | Train Loss: 0.5889 | Val Loss: 1.0167 | F1: 0.6538 | B-Acc: 0.6600
+2026-06-11 15:44:45,935 - INFO - [Fold 1] Epoch [29/30] | LR: 1.19e-05 | Train Loss: 0.7058 | Val Loss: 1.0260 | F1: 0.6266 | B-Acc: 0.6400
+2026-06-11 15:44:48,676 - INFO - [Fold 1] Epoch [30/30] | LR: 3.74e-06 | Train Loss: 0.7199 | Val Loss: 1.0432 | F1: 0.6266 | B-Acc: 0.6400

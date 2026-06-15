@@ -1,0 +1,48 @@
+2026-06-13 19:36:06,540 - INFO - ==================================================
+2026-06-13 19:36:06,540 - INFO - Offline Knowledge Distillation Started
+2026-06-13 19:36:06,540 - INFO - ==================================================
+2026-06-13 19:36:06,540 - INFO - Found existing Soft Labels cache at ./runs/train_pseudo/pseudo_8/teacher_soft_labels_cache.pt. Skipping extraction.
+2026-06-13 19:36:09,537 - INFO - Initializing Student Model (r=32, alpha=64)
+2026-06-13 19:36:10,029 - INFO - ==================================================
+2026-06-13 19:36:10,029 - INFO - Beginning Fast Offline Knowledge Distillation (AMP Enabled)
+2026-06-13 19:38:57,704 - INFO - Epoch [01/30] | LR: 1.00e-03 | KD Loss: 0.3013 | Real Val F1: 0.6794 | Real Val B-Acc: 0.6720
+2026-06-13 19:38:57,819 - INFO -   --> Saved new best Student (F1: 0.6794)
+2026-06-13 19:41:45,166 - INFO - Epoch [02/30] | LR: 9.97e-04 | KD Loss: 0.1745 | Real Val F1: 0.7327 | Real Val B-Acc: 0.7280
+2026-06-13 19:41:45,305 - INFO -   --> Saved new best Student (F1: 0.7327)
+2026-06-13 19:44:32,054 - INFO - Epoch [03/30] | LR: 9.89e-04 | KD Loss: 0.1630 | Real Val F1: 0.7222 | Real Val B-Acc: 0.7160
+2026-06-13 19:47:19,248 - INFO - Epoch [04/30] | LR: 9.76e-04 | KD Loss: 0.1589 | Real Val F1: 0.7169 | Real Val B-Acc: 0.7200
+2026-06-13 19:50:06,175 - INFO - Epoch [05/30] | LR: 9.57e-04 | KD Loss: 0.1551 | Real Val F1: 0.7384 | Real Val B-Acc: 0.7360
+2026-06-13 19:50:06,329 - INFO -   --> Saved new best Student (F1: 0.7384)
+2026-06-13 19:52:53,528 - INFO - Epoch [06/30] | LR: 9.33e-04 | KD Loss: 0.1493 | Real Val F1: 0.7403 | Real Val B-Acc: 0.7400
+2026-06-13 19:52:53,667 - INFO -   --> Saved new best Student (F1: 0.7403)
+2026-06-13 19:55:40,700 - INFO - Epoch [07/30] | LR: 9.05e-04 | KD Loss: 0.1476 | Real Val F1: 0.7106 | Real Val B-Acc: 0.7040
+2026-06-13 19:58:27,746 - INFO - Epoch [08/30] | LR: 8.72e-04 | KD Loss: 0.1432 | Real Val F1: 0.7320 | Real Val B-Acc: 0.7320
+2026-06-13 20:01:14,976 - INFO - Epoch [09/30] | LR: 8.35e-04 | KD Loss: 0.1370 | Real Val F1: 0.7444 | Real Val B-Acc: 0.7400
+2026-06-13 20:01:15,113 - INFO -   --> Saved new best Student (F1: 0.7444)
+2026-06-13 20:04:01,929 - INFO - Epoch [10/30] | LR: 7.94e-04 | KD Loss: 0.1337 | Real Val F1: 0.7846 | Real Val B-Acc: 0.7800
+2026-06-13 20:04:02,090 - INFO -   --> Saved new best Student (F1: 0.7846)
+2026-06-13 20:06:49,156 - INFO - Epoch [11/30] | LR: 7.50e-04 | KD Loss: 0.1271 | Real Val F1: 0.7935 | Real Val B-Acc: 0.7920
+2026-06-13 20:06:49,341 - INFO -   --> Saved new best Student (F1: 0.7935)
+2026-06-13 20:09:36,385 - INFO - Epoch [12/30] | LR: 7.04e-04 | KD Loss: 0.1240 | Real Val F1: 0.7806 | Real Val B-Acc: 0.7760
+2026-06-13 20:12:23,196 - INFO - Epoch [13/30] | LR: 6.55e-04 | KD Loss: 0.1203 | Real Val F1: 0.7460 | Real Val B-Acc: 0.7360
+2026-06-13 20:15:10,176 - INFO - Epoch [14/30] | LR: 6.04e-04 | KD Loss: 0.1135 | Real Val F1: 0.7570 | Real Val B-Acc: 0.7520
+2026-06-13 20:17:57,133 - INFO - Epoch [15/30] | LR: 5.53e-04 | KD Loss: 0.1102 | Real Val F1: 0.7857 | Real Val B-Acc: 0.7800
+2026-06-13 20:20:44,169 - INFO - Epoch [16/30] | LR: 5.01e-04 | KD Loss: 0.1052 | Real Val F1: 0.7339 | Real Val B-Acc: 0.7320
+2026-06-13 20:23:31,472 - INFO - Epoch [17/30] | LR: 4.48e-04 | KD Loss: 0.1006 | Real Val F1: 0.7693 | Real Val B-Acc: 0.7640
+2026-06-13 20:26:18,396 - INFO - Epoch [18/30] | LR: 3.97e-04 | KD Loss: 0.0978 | Real Val F1: 0.7661 | Real Val B-Acc: 0.7600
+2026-06-13 20:29:05,554 - INFO - Epoch [19/30] | LR: 3.46e-04 | KD Loss: 0.0917 | Real Val F1: 0.7735 | Real Val B-Acc: 0.7680
+2026-06-13 20:31:52,447 - INFO - Epoch [20/30] | LR: 2.97e-04 | KD Loss: 0.0873 | Real Val F1: 0.7784 | Real Val B-Acc: 0.7720
+2026-06-13 20:34:39,540 - INFO - Epoch [21/30] | LR: 2.51e-04 | KD Loss: 0.0842 | Real Val F1: 0.7774 | Real Val B-Acc: 0.7720
+2026-06-13 20:37:26,527 - INFO - Epoch [22/30] | LR: 2.07e-04 | KD Loss: 0.0804 | Real Val F1: 0.7684 | Real Val B-Acc: 0.7600
+2026-06-13 20:40:13,659 - INFO - Epoch [23/30] | LR: 1.66e-04 | KD Loss: 0.0769 | Real Val F1: 0.7737 | Real Val B-Acc: 0.7680
+2026-06-13 20:43:00,866 - INFO - Epoch [24/30] | LR: 1.29e-04 | KD Loss: 0.0737 | Real Val F1: 0.7881 | Real Val B-Acc: 0.7840
+2026-06-13 20:45:47,852 - INFO - Epoch [25/30] | LR: 9.64e-05 | KD Loss: 0.0711 | Real Val F1: 0.7567 | Real Val B-Acc: 0.7520
+2026-06-13 20:48:34,862 - INFO - Epoch [26/30] | LR: 6.79e-05 | KD Loss: 0.0680 | Real Val F1: 0.7965 | Real Val B-Acc: 0.7920
+2026-06-13 20:48:35,002 - INFO -   --> Saved new best Student (F1: 0.7965)
+2026-06-13 20:51:21,897 - INFO - Epoch [27/30] | LR: 4.42e-05 | KD Loss: 0.0665 | Real Val F1: 0.7729 | Real Val B-Acc: 0.7680
+2026-06-13 20:54:08,820 - INFO - Epoch [28/30] | LR: 2.54e-05 | KD Loss: 0.0644 | Real Val F1: 0.7768 | Real Val B-Acc: 0.7720
+2026-06-13 20:56:55,620 - INFO - Epoch [29/30] | LR: 1.19e-05 | KD Loss: 0.0647 | Real Val F1: 0.7807 | Real Val B-Acc: 0.7760
+2026-06-13 20:59:42,665 - INFO - Epoch [30/30] | LR: 3.74e-06 | KD Loss: 0.0635 | Real Val F1: 0.7767 | Real Val B-Acc: 0.7720
+2026-06-13 20:59:42,766 - INFO - ==================================================
+2026-06-13 20:59:42,766 - INFO - Distillation Completed. Best Student F1: 0.7965
+2026-06-13 20:59:42,766 - INFO - Final Student Weights saved at: runs/distill/distill_run_6/best_student.pth

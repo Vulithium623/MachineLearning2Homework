@@ -1,0 +1,36 @@
+2026-06-10 18:07:46,350 - INFO - ==================================================
+2026-06-10 18:07:46,350 - INFO - Experiment Arguments (Hyperparameters):
+2026-06-10 18:07:46,350 - INFO -   batch_size        : 16
+2026-06-10 18:07:46,351 - INFO -   color_jitter      : 0.2
+2026-06-10 18:07:46,351 - INFO -   data_path         : /root/autodl-tmp/data/train_few_shot/
+2026-06-10 18:07:46,351 - INFO -   elastic_alpha     : 25.0
+2026-06-10 18:07:46,351 - INFO -   elastic_prob      : 0.5
+2026-06-10 18:07:46,351 - INFO -   elastic_sigma     : 4.0
+2026-06-10 18:07:46,351 - INFO -   epochs            : 100
+2026-06-10 18:07:46,351 - INFO -   focal_gamma       : 0.0
+2026-06-10 18:07:46,351 - INFO -   k_folds           : 7
+2026-06-10 18:07:46,351 - INFO -   lora_alpha        : 16
+2026-06-10 18:07:46,351 - INFO -   lora_dropout      : 0.1
+2026-06-10 18:07:46,351 - INFO -   lora_r            : 8
+2026-06-10 18:07:46,351 - INFO -   lr                : 0.0008
+2026-06-10 18:07:46,351 - INFO -   mixup_alpha       : 0.8
+2026-06-10 18:07:46,351 - INFO -   mixup_cutoff      : 0.0
+2026-06-10 18:07:46,351 - INFO -   name              : fold_fold
+2026-06-10 18:07:46,351 - INFO -   no_hflip          : False
+2026-06-10 18:07:46,351 - INFO -   no_rotate         : False
+2026-06-10 18:07:46,351 - INFO -   no_vflip          : False
+2026-06-10 18:07:46,351 - INFO -   num_workers       : 4
+2026-06-10 18:07:46,351 - INFO -   rotate_pad_mode   : reflect
+2026-06-10 18:07:46,351 - INFO -   seed              : 42
+2026-06-10 18:07:46,351 - INFO -   test_size         : 0.2
+2026-06-10 18:07:46,351 - INFO -   translate         : 0.1
+2026-06-10 18:07:46,351 - INFO -   weight_decay      : 0.0001
+2026-06-10 18:07:46,351 - INFO -   weight_path       : /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-10 18:07:46,535 - INFO - ==================================================
+2026-06-10 18:07:46,535 - INFO - Phase 2.5: Ultimate K-Fold Experiment Started.
+2026-06-10 18:07:46,535 - INFO - Logs & Models saving to: runs/train/fold_fold_2
+2026-06-10 18:07:46,535 - INFO - Test Split Size: 20.0% | CV on remaining: 7-Fold Stratified
+2026-06-10 18:07:46,535 - INFO - ==================================================
+2026-06-10 18:07:46,539 - INFO - Generating data augmentation preview...
+2026-06-10 18:11:59,538 - INFO - Fold 1 Finished. Best Val F1: 0.6864 | Test F1: 0.5584
+2026-06-10 18:16:21,485 - INFO - Fold 2 Finished. Best Val F1: 0.7261 | Test F1: 0.5629

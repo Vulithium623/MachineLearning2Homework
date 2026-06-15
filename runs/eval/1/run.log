@@ -1,0 +1,13 @@
+2026-06-08 18:27:27,008 - INFO - ==================================================
+2026-06-08 18:27:27,008 - INFO - RAG Evaluation Started. Logs saved to runs/eval/1
+2026-06-08 18:27:27,008 - INFO - ==================================================
+2026-06-08 18:27:27,008 - INFO -   name: None
+2026-06-08 18:27:27,008 - INFO -   data_path: /root/autodl-tmp/data/train_few_shot/
+2026-06-08 18:27:27,008 - INFO -   base_weight_path: /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-08 18:27:27,008 - INFO -   lora_weight_path: .weights/best.pth
+2026-06-08 18:27:27,008 - INFO -   top_k: 3
+2026-06-08 18:27:27,008 - INFO -   model: gemini-3.1-pro
+2026-06-08 18:27:27,008 - INFO -   dry_run: True
+2026-06-08 18:27:27,008 - INFO - Initializing VLM client (Base URL: https://generativelanguage.googleapis.com/v1beta/openai/)
+2026-06-08 18:27:27,220 - INFO - Using device: cuda
+2026-06-08 18:27:27,220 - INFO - Loading Phase 2 DINOv2-LoRA model offline...

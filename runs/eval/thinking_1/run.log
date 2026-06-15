@@ -1,0 +1,91 @@
+2026-06-08 20:11:56,210 - INFO - ==================================================
+2026-06-08 20:11:56,210 - INFO - RAG Evaluation Started. Logs saved to runs/eval/thinking_1
+2026-06-08 20:11:56,210 - INFO - Retrieval Strategy: 3 images PER CLASS
+2026-06-08 20:11:56,210 - INFO - ==================================================
+2026-06-08 20:11:56,410 - INFO - Using device: cuda | Model: gemini-3.1-pro-preview
+2026-06-08 20:11:56,411 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 20:11:56,940 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 20:11:58,974 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 20:12:09,850 - ERROR - API Request Failed: Connection error.
+2026-06-08 20:12:12,851 - INFO - Visual Debug Log saved to runs/eval/thinking_1/prompt_debug.md
+2026-06-08 20:12:12,852 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown
+2026-06-08 20:12:27,846 - INFO - Tokens: Prompt=17686 (Cached=16333) | Completion=2 | Total=18511
+2026-06-08 20:12:27,846 - INFO - Sample 02/38 | True: Class_0 | Pred: Class_0
+2026-06-08 20:12:39,710 - INFO - Tokens: Prompt=17686 (Cached=16333) | Completion=2 | Total=18125
+2026-06-08 20:12:39,711 - INFO - Sample 03/38 | True: Class_2 | Pred: Class_0
+2026-06-08 20:12:59,063 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18669
+2026-06-08 20:12:59,064 - INFO - Sample 04/38 | True: Class_1 | Pred: Class_2
+2026-06-08 20:13:14,179 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18668
+2026-06-08 20:13:14,179 - INFO - Sample 05/38 | True: Class_1 | Pred: Class_4
+2026-06-08 20:13:30,082 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18670
+2026-06-08 20:13:30,082 - INFO - Sample 06/38 | True: Class_0 | Pred: Class_3
+2026-06-08 20:13:51,626 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18668
+2026-06-08 20:13:51,626 - INFO - Sample 07/38 | True: Class_4 | Pred: Class_4
+2026-06-08 20:14:03,550 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18240
+2026-06-08 20:14:03,551 - INFO - Sample 08/38 | True: Class_2 | Pred: Class_1
+2026-06-08 20:14:19,524 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18574
+2026-06-08 20:14:19,524 - INFO - Sample 09/38 | True: Class_1 | Pred: Class_4
+2026-06-08 20:14:35,145 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18258
+2026-06-08 20:14:35,145 - INFO - Sample 10/38 | True: Class_1 | Pred: Class_1
+2026-06-08 20:14:47,955 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18302
+2026-06-08 20:14:47,956 - INFO - Sample 11/38 | True: Class_2 | Pred: Class_2
+2026-06-08 20:15:02,674 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18668
+2026-06-08 20:15:02,674 - INFO - Sample 12/38 | True: Class_3 | Pred: Class_1
+2026-06-08 20:15:24,440 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18672
+2026-06-08 20:15:24,440 - INFO - Sample 13/38 | True: Class_4 | Pred: Class_3
+2026-06-08 20:15:39,115 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18558
+2026-06-08 20:15:39,115 - INFO - Sample 14/38 | True: Class_0 | Pred: Class_0
+2026-06-08 20:15:53,253 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18669
+2026-06-08 20:15:53,253 - INFO - Sample 15/38 | True: Class_3 | Pred: Class_2
+2026-06-08 20:16:04,869 - INFO - Tokens: Prompt=17686 (Cached=16333) | Completion=3 | Total=18209
+2026-06-08 20:16:04,869 - INFO - Sample 16/38 | True: Class_1 | Pred: Class_2
+2026-06-08 20:16:18,520 - INFO - Tokens: Prompt=17686 (Cached=16333) | Completion=3 | Total=18433
+2026-06-08 20:16:18,521 - INFO - Sample 17/38 | True: Class_4 | Pred: Class_3
+2026-06-08 20:16:30,086 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18149
+2026-06-08 20:16:30,087 - INFO - Sample 18/38 | True: Class_3 | Pred: Class_3
+2026-06-08 20:16:41,912 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=2 | Total=18411
+2026-06-08 20:16:41,912 - INFO - Sample 19/38 | True: Class_3 | Pred: Class_0
+2026-06-08 20:17:03,387 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18669
+2026-06-08 20:17:03,387 - INFO - Sample 20/38 | True: Class_2 | Pred: Class_3
+2026-06-08 20:17:18,420 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18670
+2026-06-08 20:17:18,420 - INFO - Sample 21/38 | True: Class_0 | Pred: Class_0
+2026-06-08 20:17:31,056 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18269
+2026-06-08 20:17:31,057 - INFO - Sample 22/38 | True: Class_3 | Pred: Class_3
+2026-06-08 20:17:41,937 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18145
+2026-06-08 20:17:41,937 - INFO - Sample 23/38 | True: Class_3 | Pred: Class_1
+2026-06-08 20:17:54,797 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18272
+2026-06-08 20:17:54,797 - INFO - Sample 24/38 | True: Class_2 | Pred: Class_4
+2026-06-08 20:18:09,657 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18673
+2026-06-08 20:18:09,657 - INFO - Sample 25/38 | True: Class_1 | Pred: Class_2
+2026-06-08 20:18:24,957 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18671
+2026-06-08 20:18:24,958 - INFO - Sample 26/38 | True: Class_2 | Pred: Class_4
+2026-06-08 20:18:45,176 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18668
+2026-06-08 20:18:45,176 - INFO - Sample 27/38 | True: Class_4 | Pred: Class_1
+2026-06-08 20:19:03,532 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18669
+2026-06-08 20:19:03,532 - INFO - Sample 28/38 | True: Class_0 | Pred: Class_1
+2026-06-08 20:19:21,510 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18671
+2026-06-08 20:19:21,510 - INFO - Sample 29/38 | True: Class_0 | Pred: Class_0
+2026-06-08 20:19:35,469 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18598
+2026-06-08 20:19:35,469 - INFO - Sample 30/38 | True: Class_0 | Pred: Class_3
+2026-06-08 20:19:59,596 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18668
+2026-06-08 20:19:59,597 - INFO - Sample 31/38 | True: Class_2 | Pred: Class_1
+2026-06-08 20:20:12,012 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18353
+2026-06-08 20:20:12,012 - INFO - Sample 32/38 | True: Class_4 | Pred: Class_1
+2026-06-08 20:20:30,537 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18670
+2026-06-08 20:20:30,538 - INFO - Sample 33/38 | True: Class_4 | Pred: Class_1
+2026-06-08 20:20:45,373 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18668
+2026-06-08 20:20:45,374 - INFO - Sample 34/38 | True: Class_3 | Pred: Class_4
+2026-06-08 20:20:54,488 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18136
+2026-06-08 20:20:54,489 - INFO - Sample 35/38 | True: Class_2 | Pred: Class_4
+2026-06-08 20:21:22,076 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18449
+2026-06-08 20:21:22,076 - INFO - Sample 36/38 | True: Class_1 | Pred: Class_1
+2026-06-08 20:21:32,460 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18249
+2026-06-08 20:21:32,460 - INFO - Sample 37/38 | True: Class_0 | Pred: Class_0
+2026-06-08 20:21:46,529 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18670
+2026-06-08 20:21:46,530 - INFO - Sample 38/38 | True: Class_3 | Pred: Class_3
+2026-06-08 20:21:47,537 - INFO - ========================================
+2026-06-08 20:21:47,538 - INFO - FINAL RAG RESULTS (gemini-3.1-pro-preview):
+2026-06-08 20:21:47,538 - INFO - Retrieval Setup:  3 per class (15 total)
+2026-06-08 20:21:47,538 - INFO - Macro-F1:         0.3147
+2026-06-08 20:21:47,538 - INFO - Balanced Acc:     0.3107
+2026-06-08 20:21:47,538 - INFO - ========================================

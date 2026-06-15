@@ -1,0 +1,62 @@
+2026-06-10 18:24:15,583 - INFO - 
+--- Preparing Fold 4/5 ---
+2026-06-10 18:24:15,877 - INFO - === Starting Training for Fold 4 ===
+2026-06-10 18:24:18,364 - INFO - [Fold 4] Epoch [01/50] | LR: 8.00e-04 | Train Loss: 1.8768 | Val Loss: 1.9507 | F1: 0.1771 | B-Acc: 0.2250
+2026-06-10 18:24:18,467 - INFO - [Fold 4] --> Saved new best model (F1: 0.1771)
+2026-06-10 18:24:20,958 - INFO - [Fold 4] Epoch [02/50] | LR: 7.99e-04 | Train Loss: 1.6984 | Val Loss: 1.5539 | F1: 0.3258 | B-Acc: 0.3250
+2026-06-10 18:24:21,133 - INFO - [Fold 4] --> Saved new best model (F1: 0.3258)
+2026-06-10 18:24:23,552 - INFO - [Fold 4] Epoch [03/50] | LR: 7.97e-04 | Train Loss: 1.5399 | Val Loss: 1.6385 | F1: 0.1394 | B-Acc: 0.2000
+2026-06-10 18:24:25,965 - INFO - [Fold 4] Epoch [04/50] | LR: 7.93e-04 | Train Loss: 1.6224 | Val Loss: 1.5589 | F1: 0.2379 | B-Acc: 0.3000
+2026-06-10 18:24:28,450 - INFO - [Fold 4] Epoch [05/50] | LR: 7.87e-04 | Train Loss: 1.6427 | Val Loss: 1.6389 | F1: 0.2628 | B-Acc: 0.3250
+2026-06-10 18:24:31,141 - INFO - [Fold 4] Epoch [06/50] | LR: 7.80e-04 | Train Loss: 1.5686 | Val Loss: 1.6854 | F1: 0.1990 | B-Acc: 0.2500
+2026-06-10 18:24:33,572 - INFO - [Fold 4] Epoch [07/50] | LR: 7.72e-04 | Train Loss: 1.4786 | Val Loss: 1.4436 | F1: 0.4136 | B-Acc: 0.4000
+2026-06-10 18:24:33,810 - INFO - [Fold 4] --> Saved new best model (F1: 0.4136)
+2026-06-10 18:24:36,373 - INFO - [Fold 4] Epoch [08/50] | LR: 7.62e-04 | Train Loss: 1.4458 | Val Loss: 1.4205 | F1: 0.3266 | B-Acc: 0.3500
+2026-06-10 18:24:38,771 - INFO - [Fold 4] Epoch [09/50] | LR: 7.51e-04 | Train Loss: 1.3487 | Val Loss: 1.4131 | F1: 0.3404 | B-Acc: 0.3500
+2026-06-10 18:24:41,375 - INFO - [Fold 4] Epoch [10/50] | LR: 7.38e-04 | Train Loss: 1.3094 | Val Loss: 1.3348 | F1: 0.4646 | B-Acc: 0.5250
+2026-06-10 18:24:41,544 - INFO - [Fold 4] --> Saved new best model (F1: 0.4646)
+2026-06-10 18:24:43,971 - INFO - [Fold 4] Epoch [11/50] | LR: 7.24e-04 | Train Loss: 1.3061 | Val Loss: 1.4604 | F1: 0.3705 | B-Acc: 0.3750
+2026-06-10 18:24:46,410 - INFO - [Fold 4] Epoch [12/50] | LR: 7.08e-04 | Train Loss: 1.5281 | Val Loss: 1.6961 | F1: 0.2527 | B-Acc: 0.3250
+2026-06-10 18:24:49,013 - INFO - [Fold 4] Epoch [13/50] | LR: 6.92e-04 | Train Loss: 1.4039 | Val Loss: 1.4093 | F1: 0.3731 | B-Acc: 0.4000
+2026-06-10 18:24:51,421 - INFO - [Fold 4] Epoch [14/50] | LR: 6.74e-04 | Train Loss: 1.3295 | Val Loss: 1.3397 | F1: 0.4114 | B-Acc: 0.4250
+2026-06-10 18:24:53,908 - INFO - [Fold 4] Epoch [15/50] | LR: 6.55e-04 | Train Loss: 1.2056 | Val Loss: 1.3059 | F1: 0.4705 | B-Acc: 0.4750
+2026-06-10 18:24:54,113 - INFO - [Fold 4] --> Saved new best model (F1: 0.4705)
+2026-06-10 18:24:56,542 - INFO - [Fold 4] Epoch [16/50] | LR: 6.35e-04 | Train Loss: 1.1972 | Val Loss: 1.3606 | F1: 0.3961 | B-Acc: 0.4250
+2026-06-10 18:24:58,992 - INFO - [Fold 4] Epoch [17/50] | LR: 6.15e-04 | Train Loss: 1.1411 | Val Loss: 1.5081 | F1: 0.3614 | B-Acc: 0.3750
+2026-06-10 18:25:01,384 - INFO - [Fold 4] Epoch [18/50] | LR: 5.93e-04 | Train Loss: 1.2115 | Val Loss: 1.4404 | F1: 0.2665 | B-Acc: 0.2500
+2026-06-10 18:25:04,060 - INFO - [Fold 4] Epoch [19/50] | LR: 5.71e-04 | Train Loss: 1.1090 | Val Loss: 1.2585 | F1: 0.4421 | B-Acc: 0.4500
+2026-06-10 18:25:06,415 - INFO - [Fold 4] Epoch [20/50] | LR: 5.48e-04 | Train Loss: 1.0729 | Val Loss: 1.2558 | F1: 0.5029 | B-Acc: 0.5250
+2026-06-10 18:25:06,560 - INFO - [Fold 4] --> Saved new best model (F1: 0.5029)
+2026-06-10 18:25:08,969 - INFO - [Fold 4] Epoch [21/50] | LR: 5.24e-04 | Train Loss: 1.0745 | Val Loss: 1.3560 | F1: 0.4395 | B-Acc: 0.4500
+2026-06-10 18:25:11,358 - INFO - [Fold 4] Epoch [22/50] | LR: 5.00e-04 | Train Loss: 1.1122 | Val Loss: 1.5446 | F1: 0.3220 | B-Acc: 0.3500
+2026-06-10 18:25:13,786 - INFO - [Fold 4] Epoch [23/50] | LR: 4.75e-04 | Train Loss: 1.1600 | Val Loss: 1.2199 | F1: 0.4906 | B-Acc: 0.5000
+2026-06-10 18:25:16,176 - INFO - [Fold 4] Epoch [24/50] | LR: 4.51e-04 | Train Loss: 1.1570 | Val Loss: 1.2476 | F1: 0.5485 | B-Acc: 0.5500
+2026-06-10 18:25:16,390 - INFO - [Fold 4] --> Saved new best model (F1: 0.5485)
+2026-06-10 18:25:18,891 - INFO - [Fold 4] Epoch [25/50] | LR: 4.26e-04 | Train Loss: 1.1038 | Val Loss: 1.2829 | F1: 0.5429 | B-Acc: 0.5250
+2026-06-10 18:25:21,303 - INFO - [Fold 4] Epoch [26/50] | LR: 4.01e-04 | Train Loss: 1.0513 | Val Loss: 1.3286 | F1: 0.5139 | B-Acc: 0.5000
+2026-06-10 18:25:23,759 - INFO - [Fold 4] Epoch [27/50] | LR: 3.75e-04 | Train Loss: 1.0062 | Val Loss: 1.3387 | F1: 0.5126 | B-Acc: 0.5250
+2026-06-10 18:25:26,142 - INFO - [Fold 4] Epoch [28/50] | LR: 3.50e-04 | Train Loss: 1.0145 | Val Loss: 1.3809 | F1: 0.3933 | B-Acc: 0.4000
+2026-06-10 18:25:28,504 - INFO - [Fold 4] Epoch [29/50] | LR: 3.26e-04 | Train Loss: 1.1161 | Val Loss: 1.3664 | F1: 0.3779 | B-Acc: 0.3750
+2026-06-10 18:25:30,855 - INFO - [Fold 4] Epoch [30/50] | LR: 3.01e-04 | Train Loss: 0.9540 | Val Loss: 1.2441 | F1: 0.4322 | B-Acc: 0.4250
+2026-06-10 18:25:33,285 - INFO - [Fold 4] Epoch [31/50] | LR: 2.77e-04 | Train Loss: 1.0360 | Val Loss: 1.3688 | F1: 0.4135 | B-Acc: 0.4250
+2026-06-10 18:25:35,681 - INFO - [Fold 4] Epoch [32/50] | LR: 2.53e-04 | Train Loss: 0.9060 | Val Loss: 1.2542 | F1: 0.5406 | B-Acc: 0.5250
+2026-06-10 18:25:38,122 - INFO - [Fold 4] Epoch [33/50] | LR: 2.30e-04 | Train Loss: 0.7746 | Val Loss: 1.3042 | F1: 0.3982 | B-Acc: 0.3750
+2026-06-10 18:25:40,576 - INFO - [Fold 4] Epoch [34/50] | LR: 2.08e-04 | Train Loss: 1.1482 | Val Loss: 1.2905 | F1: 0.4878 | B-Acc: 0.4750
+2026-06-10 18:25:43,288 - INFO - [Fold 4] Epoch [35/50] | LR: 1.86e-04 | Train Loss: 1.0660 | Val Loss: 1.2396 | F1: 0.5144 | B-Acc: 0.5000
+2026-06-10 18:25:45,701 - INFO - [Fold 4] Epoch [36/50] | LR: 1.66e-04 | Train Loss: 0.8730 | Val Loss: 1.3707 | F1: 0.3969 | B-Acc: 0.4000
+2026-06-10 18:25:48,075 - INFO - [Fold 4] Epoch [37/50] | LR: 1.46e-04 | Train Loss: 0.9857 | Val Loss: 1.2951 | F1: 0.5272 | B-Acc: 0.5250
+2026-06-10 18:25:50,467 - INFO - [Fold 4] Epoch [38/50] | LR: 1.27e-04 | Train Loss: 0.9421 | Val Loss: 1.2874 | F1: 0.5063 | B-Acc: 0.5000
+2026-06-10 18:25:52,979 - INFO - [Fold 4] Epoch [39/50] | LR: 1.09e-04 | Train Loss: 0.9812 | Val Loss: 1.3450 | F1: 0.4921 | B-Acc: 0.4750
+2026-06-10 18:25:55,378 - INFO - [Fold 4] Epoch [40/50] | LR: 9.27e-05 | Train Loss: 1.0155 | Val Loss: 1.3162 | F1: 0.4543 | B-Acc: 0.4250
+2026-06-10 18:25:57,731 - INFO - [Fold 4] Epoch [41/50] | LR: 7.73e-05 | Train Loss: 0.7832 | Val Loss: 1.3089 | F1: 0.5186 | B-Acc: 0.5000
+2026-06-10 18:26:00,110 - INFO - [Fold 4] Epoch [42/50] | LR: 6.32e-05 | Train Loss: 1.0421 | Val Loss: 1.3473 | F1: 0.4913 | B-Acc: 0.4750
+2026-06-10 18:26:02,466 - INFO - [Fold 4] Epoch [43/50] | LR: 5.04e-05 | Train Loss: 0.9940 | Val Loss: 1.3376 | F1: 0.4731 | B-Acc: 0.4500
+2026-06-10 18:26:04,856 - INFO - [Fold 4] Epoch [44/50] | LR: 3.90e-05 | Train Loss: 0.8811 | Val Loss: 1.3570 | F1: 0.4731 | B-Acc: 0.4500
+2026-06-10 18:26:07,268 - INFO - [Fold 4] Epoch [45/50] | LR: 2.91e-05 | Train Loss: 0.9083 | Val Loss: 1.3761 | F1: 0.4731 | B-Acc: 0.4500
+2026-06-10 18:26:09,687 - INFO - [Fold 4] Epoch [46/50] | LR: 2.06e-05 | Train Loss: 0.8423 | Val Loss: 1.3819 | F1: 0.4913 | B-Acc: 0.4750
+2026-06-10 18:26:12,158 - INFO - [Fold 4] Epoch [47/50] | LR: 1.36e-05 | Train Loss: 0.7962 | Val Loss: 1.3875 | F1: 0.4913 | B-Acc: 0.4750
+2026-06-10 18:26:14,631 - INFO - [Fold 4] Epoch [48/50] | LR: 8.08e-06 | Train Loss: 0.8766 | Val Loss: 1.3790 | F1: 0.4913 | B-Acc: 0.4750
+2026-06-10 18:26:17,018 - INFO - [Fold 4] Epoch [49/50] | LR: 4.15e-06 | Train Loss: 0.8085 | Val Loss: 1.3752 | F1: 0.4913 | B-Acc: 0.4750
+2026-06-10 18:26:19,431 - INFO - [Fold 4] Epoch [50/50] | LR: 1.79e-06 | Train Loss: 0.9857 | Val Loss: 1.3739 | F1: 0.4913 | B-Acc: 0.4750
+2026-06-10 18:26:19,533 - INFO - [Fold 4] Evaluating best validation model on Test Set...
+2026-06-10 18:26:20,204 - INFO - [Fold 4] Test Set Results -> F1: 0.5656 | B-Acc: 0.5600

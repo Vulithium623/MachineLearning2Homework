@@ -1,0 +1,50 @@
+2026-06-10 18:18:01,394 - INFO - ==================================================
+2026-06-10 18:18:01,394 - INFO - Experiment Arguments (Hyperparameters):
+2026-06-10 18:18:01,394 - INFO -   batch_size        : 16
+2026-06-10 18:18:01,395 - INFO -   color_jitter      : 0.2
+2026-06-10 18:18:01,395 - INFO -   data_path         : /root/autodl-tmp/data/train_few_shot/
+2026-06-10 18:18:01,395 - INFO -   elastic_alpha     : 25.0
+2026-06-10 18:18:01,395 - INFO -   elastic_prob      : 0.5
+2026-06-10 18:18:01,395 - INFO -   elastic_sigma     : 4.0
+2026-06-10 18:18:01,395 - INFO -   epochs            : 50
+2026-06-10 18:18:01,395 - INFO -   focal_gamma       : 0.0
+2026-06-10 18:18:01,395 - INFO -   k_folds           : 5
+2026-06-10 18:18:01,395 - INFO -   lora_alpha        : 16
+2026-06-10 18:18:01,395 - INFO -   lora_dropout      : 0.1
+2026-06-10 18:18:01,395 - INFO -   lora_r            : 8
+2026-06-10 18:18:01,395 - INFO -   lr                : 0.0008
+2026-06-10 18:18:01,395 - INFO -   mixup_alpha       : 0.8
+2026-06-10 18:18:01,395 - INFO -   mixup_cutoff      : 0.0
+2026-06-10 18:18:01,395 - INFO -   name              : fold_fold
+2026-06-10 18:18:01,395 - INFO -   no_hflip          : False
+2026-06-10 18:18:01,395 - INFO -   no_rotate         : False
+2026-06-10 18:18:01,395 - INFO -   no_vflip          : False
+2026-06-10 18:18:01,396 - INFO -   num_workers       : 4
+2026-06-10 18:18:01,396 - INFO -   rotate_pad_mode   : reflect
+2026-06-10 18:18:01,396 - INFO -   seed              : 42
+2026-06-10 18:18:01,396 - INFO -   test_size         : 0.2
+2026-06-10 18:18:01,396 - INFO -   translate         : 0.1
+2026-06-10 18:18:01,396 - INFO -   weight_decay      : 0.0001
+2026-06-10 18:18:01,396 - INFO -   weight_path       : /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-10 18:18:01,544 - INFO - ==================================================
+2026-06-10 18:18:01,544 - INFO - Phase 2.5: Ultimate K-Fold Experiment Started.
+2026-06-10 18:18:01,544 - INFO - Logs & Models saving to: runs/train/fold_fold_3
+2026-06-10 18:18:01,544 - INFO - Test Split Size: 20.0% | CV on remaining: 5-Fold Stratified
+2026-06-10 18:18:01,544 - INFO - ==================================================
+2026-06-10 18:18:01,548 - INFO - Generating data augmentation preview...
+2026-06-10 18:20:06,615 - INFO - Fold 1 Finished. Best Val F1: 0.6857 | Test F1: 0.5785
+2026-06-10 18:22:11,777 - INFO - Fold 2 Finished. Best Val F1: 0.6138 | Test F1: 0.5153
+2026-06-10 18:24:15,582 - INFO - Fold 3 Finished. Best Val F1: 0.7298 | Test F1: 0.5465
+2026-06-10 18:26:20,208 - INFO - Fold 4 Finished. Best Val F1: 0.5485 | Test F1: 0.5656
+2026-06-10 18:28:23,228 - INFO - Fold 5 Finished. Best Val F1: 0.6322 | Test F1: 0.5865
+2026-06-10 18:28:23,228 - INFO - ==================================================
+2026-06-10 18:28:23,228 - INFO - FINAL K-FOLD CROSS VALIDATION RESULTS:
+2026-06-10 18:28:23,228 - INFO -   Fold 1: Val F1 = 0.6857 | Test F1 = 0.5785
+2026-06-10 18:28:23,228 - INFO -   Fold 2: Val F1 = 0.6138 | Test F1 = 0.5153
+2026-06-10 18:28:23,228 - INFO -   Fold 3: Val F1 = 0.7298 | Test F1 = 0.5465
+2026-06-10 18:28:23,228 - INFO -   Fold 4: Val F1 = 0.5485 | Test F1 = 0.5656
+2026-06-10 18:28:23,228 - INFO -   Fold 5: Val F1 = 0.6322 | Test F1 = 0.5865
+2026-06-10 18:28:23,229 - INFO - --------------------
+2026-06-10 18:28:23,229 - INFO -   Average Validation Macro-F1 : 0.6420 ± 0.0621
+2026-06-10 18:28:23,229 - INFO -   Average Test Macro-F1       : 0.5585 ± 0.0255
+2026-06-10 18:28:23,229 - INFO - ==================================================

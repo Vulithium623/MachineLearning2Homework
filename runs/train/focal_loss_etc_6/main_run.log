@@ -1,0 +1,33 @@
+2026-06-10 15:52:33,485 - INFO - ==================================================
+2026-06-10 15:52:33,485 - INFO - Experiment Arguments (Hyperparameters):
+2026-06-10 15:52:33,485 - INFO -   batch_size        : 16
+2026-06-10 15:52:33,485 - INFO -   color_jitter      : 0.2
+2026-06-10 15:52:33,485 - INFO -   data_path         : /root/autodl-tmp/data/train_few_shot/
+2026-06-10 15:52:33,485 - INFO -   elastic_alpha     : 25.0
+2026-06-10 15:52:33,485 - INFO -   elastic_prob      : 0.5
+2026-06-10 15:52:33,485 - INFO -   elastic_sigma     : 4.0
+2026-06-10 15:52:33,485 - INFO -   epochs            : 100
+2026-06-10 15:52:33,485 - INFO -   focal_gamma       : 0.0
+2026-06-10 15:52:33,485 - INFO -   k_folds           : 5
+2026-06-10 15:52:33,485 - INFO -   lora_alpha        : 16
+2026-06-10 15:52:33,486 - INFO -   lora_dropout      : 0.1
+2026-06-10 15:52:33,486 - INFO -   lora_r            : 8
+2026-06-10 15:52:33,486 - INFO -   lr                : 0.0008
+2026-06-10 15:52:33,486 - INFO -   mixup_alpha       : 0.8
+2026-06-10 15:52:33,486 - INFO -   mixup_cutoff      : 0.0
+2026-06-10 15:52:33,486 - INFO -   name              : focal_loss_etc
+2026-06-10 15:52:33,486 - INFO -   no_hflip          : False
+2026-06-10 15:52:33,486 - INFO -   no_rotate         : False
+2026-06-10 15:52:33,486 - INFO -   no_vflip          : False
+2026-06-10 15:52:33,486 - INFO -   num_workers       : 4
+2026-06-10 15:52:33,486 - INFO -   rotate_pad_mode   : reflect
+2026-06-10 15:52:33,486 - INFO -   seed              : 42
+2026-06-10 15:52:33,486 - INFO -   translate         : 0.1
+2026-06-10 15:52:33,486 - INFO -   weight_decay      : 0.0001
+2026-06-10 15:52:33,486 - INFO -   weight_path       : /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-10 15:52:33,635 - INFO - ==================================================
+2026-06-10 15:52:33,635 - INFO - Phase 2.5: Ultimate K-Fold Experiment Started.
+2026-06-10 15:52:33,635 - INFO - Logs & Models saving to: runs/train/focal_loss_etc_6
+2026-06-10 15:52:33,635 - INFO - Using 5-Fold Stratified Cross Validation
+2026-06-10 15:52:33,635 - INFO - ==================================================
+2026-06-10 15:52:33,639 - INFO - Generating data augmentation preview...

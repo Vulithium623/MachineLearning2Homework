@@ -1,0 +1,19 @@
+2026-06-08 18:27:48,112 - INFO - ==================================================
+2026-06-08 18:27:48,112 - INFO - RAG Evaluation Started. Logs saved to runs/eval/2
+2026-06-08 18:27:48,112 - INFO - ==================================================
+2026-06-08 18:27:48,112 - INFO -   name: None
+2026-06-08 18:27:48,112 - INFO -   data_path: /root/autodl-tmp/data/train_few_shot/
+2026-06-08 18:27:48,112 - INFO -   base_weight_path: /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-08 18:27:48,112 - INFO -   lora_weight_path: ./weights/best.pth
+2026-06-08 18:27:48,112 - INFO -   top_k: 3
+2026-06-08 18:27:48,112 - INFO -   model: gemini-3.1-pro
+2026-06-08 18:27:48,112 - INFO -   dry_run: True
+2026-06-08 18:27:48,112 - INFO - Initializing VLM client (Base URL: https://generativelanguage.googleapis.com/v1beta/openai/)
+2026-06-08 18:27:48,307 - INFO - Using device: cuda
+2026-06-08 18:27:48,307 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 18:27:48,809 - INFO - Dataset split: 212 Train (Knowledge Base), 38 Validation.
+2026-06-08 18:27:48,809 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 18:27:50,833 - INFO - Starting Multi-modal RAG Eval using gemini-3.1-pro...
+2026-06-08 18:27:50,847 - INFO - --- DRY RUN MODE ---
+2026-06-08 18:27:50,847 - INFO - Prompt constructed successfully. Stopping before API call to save tokens.
+2026-06-08 18:27:50,847 - INFO - Example retrieved labels: ['Class_4', 'Class_4', 'Class_4']

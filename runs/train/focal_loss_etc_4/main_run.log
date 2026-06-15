@@ -1,0 +1,8 @@
+2026-06-09 20:33:14,436 - INFO - ==================================================
+2026-06-09 20:33:14,437 - INFO - Phase 2.5: Ultimate K-Fold Experiment Started.
+2026-06-09 20:33:14,437 - INFO - Logs & Models saving to: runs/train/focal_loss_etc_4
+2026-06-09 20:33:14,437 - INFO - Using 5-Fold Stratified Cross Validation
+2026-06-09 20:33:14,437 - INFO - ==================================================
+2026-06-09 20:33:14,439 - INFO - Generating data augmentation preview...
+2026-06-09 20:37:46,440 - INFO - Fold 1 Finished. Best F1: 0.7074
+2026-06-09 20:42:21,772 - INFO - Fold 2 Finished. Best F1: 0.6296

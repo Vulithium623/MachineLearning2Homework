@@ -1,0 +1,52 @@
+2026-06-13 15:54:00,325 - INFO - ==================================================
+2026-06-13 15:54:00,326 - INFO - Experiment Arguments (Hyperparameters):
+2026-06-13 15:54:00,326 - INFO -   batch_size        : 16
+2026-06-13 15:54:00,326 - INFO -   color_jitter      : 0.25
+2026-06-13 15:54:00,326 - INFO -   data_path         : /root/autodl-tmp/data/train_few_shot/
+2026-06-13 15:54:00,326 - INFO -   elastic_alpha     : 25.0
+2026-06-13 15:54:00,326 - INFO -   elastic_prob      : 0.5
+2026-06-13 15:54:00,326 - INFO -   elastic_sigma     : 4.0
+2026-06-13 15:54:00,326 - INFO -   epochs            : 25
+2026-06-13 15:54:00,326 - INFO -   focal_gamma       : 0.0
+2026-06-13 15:54:00,326 - INFO -   k_folds           : 5
+2026-06-13 15:54:00,326 - INFO -   lora_alpha        : 16
+2026-06-13 15:54:00,326 - INFO -   lora_dropout      : 0.1
+2026-06-13 15:54:00,326 - INFO -   lora_r            : 8
+2026-06-13 15:54:00,326 - INFO -   lr                : 0.001
+2026-06-13 15:54:00,326 - INFO -   mixup_alpha       : 0.7
+2026-06-13 15:54:00,326 - INFO -   name              : pseudo
+2026-06-13 15:54:00,326 - INFO -   no_hflip          : False
+2026-06-13 15:54:00,326 - INFO -   no_rotate         : False
+2026-06-13 15:54:00,326 - INFO -   no_vflip          : False
+2026-06-13 15:54:00,326 - INFO -   num_workers       : 4
+2026-06-13 15:54:00,326 - INFO -   pseudo_csv_path   : ./runs/pseudo/5/pseudo_labels.csv
+2026-06-13 15:54:00,326 - INFO -   pseudo_prob_thresh: 0.7
+2026-06-13 15:54:00,326 - INFO -   rotate_pad_mode   : reflect
+2026-06-13 15:54:00,326 - INFO -   seed              : 42
+2026-06-13 15:54:00,326 - INFO -   translate         : 0.1
+2026-06-13 15:54:00,326 - INFO -   unlabeled_data_path: /root/autodl-tmp/data/test_shuffled/
+2026-06-13 15:54:00,326 - INFO -   washout_epochs    : 0
+2026-06-13 15:54:00,326 - INFO -   weight_decay      : 0.0001
+2026-06-13 15:54:00,326 - INFO -   weight_path       : /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-13 15:54:00,474 - INFO - ==================================================
+2026-06-13 15:54:00,474 - INFO - Phase 4: Aggressive Semi-Supervised Training Started.
+2026-06-13 15:54:00,474 - INFO - Logs & Models saving to: runs/train_pseudo/pseudo_11
+2026-06-13 15:54:00,474 - INFO - ==================================================
+2026-06-13 15:54:00,475 - INFO - Parsing pseudo-labels from: ./runs/pseudo/5/pseudo_labels.csv
+2026-06-13 15:54:00,695 - INFO - Aggressive filtering completed. Class-balanced top-K: 1400. Total pseudo images: 7000
+2026-06-13 15:54:00,698 - INFO - Generating data augmentation preview...
+2026-06-13 16:26:04,303 - INFO - Fold 1 Finished. Best F1: 0.6961
+2026-06-13 16:58:20,501 - INFO - Fold 2 Finished. Best F1: 0.7252
+2026-06-13 17:30:40,004 - INFO - Fold 3 Finished. Best F1: 0.7812
+2026-06-13 18:03:06,438 - INFO - Fold 4 Finished. Best F1: 0.8216
+2026-06-13 18:35:09,557 - INFO - Fold 5 Finished. Best F1: 0.7841
+2026-06-13 18:35:09,558 - INFO - ==================================================
+2026-06-13 18:35:09,558 - INFO - FINAL K-FOLD CROSS VALIDATION RESULTS:
+2026-06-13 18:35:09,558 - INFO -   Fold 1: 0.6961
+2026-06-13 18:35:09,558 - INFO -   Fold 2: 0.7252
+2026-06-13 18:35:09,558 - INFO -   Fold 3: 0.7812
+2026-06-13 18:35:09,558 - INFO -   Fold 4: 0.8216
+2026-06-13 18:35:09,558 - INFO -   Fold 5: 0.7841
+2026-06-13 18:35:09,558 - INFO - --------------------
+2026-06-13 18:35:09,558 - INFO -   Average Macro-F1 : 0.7616 ± 0.0450
+2026-06-13 18:35:09,558 - INFO - ==================================================

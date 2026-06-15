@@ -1,0 +1,10 @@
+2026-06-13 21:13:05,012 - INFO - ==================================================
+2026-06-13 21:13:05,013 - INFO - Final Evaluation Started (Pure Single Model Inference)
+2026-06-13 21:13:05,013 - INFO - ==================================================
+2026-06-13 21:13:05,032 - INFO - Loaded 61881 images for inference.
+2026-06-13 21:13:05,032 - INFO - Initializing Model (r=32, alpha=64)
+2026-06-13 21:13:05,609 - INFO - Starting inference...
+2026-06-13 21:14:23,566 - INFO - ==================================================
+2026-06-13 21:14:23,566 - INFO - Inference Completed. Saved 61881 predictions.
+2026-06-13 21:14:23,566 - INFO - Submission file located at: runs/eval/submission/submission.csv
+2026-06-13 21:14:23,566 - INFO - ==================================================

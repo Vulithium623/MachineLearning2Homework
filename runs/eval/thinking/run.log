@@ -1,0 +1,15 @@
+2026-06-08 20:06:26,143 - INFO - ==================================================
+2026-06-08 20:06:26,143 - INFO - RAG Evaluation Started. Logs saved to runs/eval/thinking
+2026-06-08 20:06:26,143 - INFO - Retrieval Strategy: 3 images PER CLASS
+2026-06-08 20:06:26,143 - INFO - ==================================================
+2026-06-08 20:06:26,351 - INFO - Using device: cuda | Model: gemini-3.1-pro-preview
+2026-06-08 20:06:26,351 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 20:06:26,875 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 20:06:28,938 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 20:06:51,451 - INFO - Tokens: Prompt=17686 (Cached=16333) | Completion=3 | Total=18292
+2026-06-08 20:06:51,452 - INFO - Visual Debug Log saved to runs/eval/thinking/prompt_debug.md
+2026-06-08 20:06:51,452 - WARNING - Failed to parse label. Raw output: Class_4
+2026-06-08 20:06:51,452 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown
+2026-06-08 20:07:01,858 - INFO - Tokens: Prompt=17686 (Cached=0) | Completion=3 | Total=18292
+2026-06-08 20:07:01,858 - WARNING - Failed to parse label. Raw output: Class_0
+2026-06-08 20:07:01,858 - INFO - Sample 02/38 | True: Class_0 | Pred: unknown

@@ -1,0 +1,49 @@
+2026-06-08 19:46:05,395 - INFO - ==================================================
+2026-06-08 19:46:05,395 - INFO - RAG Evaluation Started. Logs saved to runs/eval/10
+2026-06-08 19:46:05,396 - INFO - Retrieval Strategy: 3 images PER CLASS
+2026-06-08 19:46:05,396 - INFO - ==================================================
+2026-06-08 19:46:05,594 - INFO - Using device: cuda | Model: gemini-3.1-pro-preview
+2026-06-08 19:46:05,594 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 19:46:06,085 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 19:46:08,114 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 19:46:20,963 - WARNING - API returned None for content! Finish reason: length
+2026-06-08 19:46:20,963 - WARNING - RAW RESPONSE DUMP: {
+  "id": "iasmataiBtSqvr0P8Zfe6AE",
+  "choices": [
+    {
+      "finish_reason": "length",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "content": null,
+        "refusal": null,
+        "role": "assistant",
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "tool_calls": null
+      }
+    }
+  ],
+  "created": 1780919180,
+  "model": "gemini-3.1-pro-preview",
+  "object": "chat.completion",
+  "moderation": null,
+  "service_tier": null,
+  "system_fingerprint": null,
+  "usage": {
+    "completion_tokens": 0,
+    "prompt_tokens": 17687,
+    "total_tokens": 17704,
+    "completion_tokens_details": null,
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cached_tokens": 16333
+    }
+  }
+}
+2026-06-08 19:46:20,964 - INFO - Visual Debug Log saved to runs/eval/10/prompt_debug.md
+2026-06-08 19:46:20,964 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown
+2026-06-08 19:46:20,964 - INFO - --- DRY RUN MODE ENABLED ---
+2026-06-08 19:46:20,964 - INFO - Successfully executed 1 API call to 'gemini-3.1-pro-preview'. Check 'runs/eval/10/prompt_debug.md'.
+2026-06-08 19:46:20,964 - INFO - Exiting early.

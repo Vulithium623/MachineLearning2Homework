@@ -1,0 +1,14 @@
+2026-06-13 18:47:52,492 - INFO - ==================================================
+2026-06-13 18:47:52,492 - INFO - Knowledge Distillation Pipeline Started
+2026-06-13 18:47:52,492 - INFO - ==================================================
+2026-06-13 18:47:52,510 - INFO - Unlabeled Training Samples (KD Set): 61881
+2026-06-13 18:47:52,510 - INFO - True Labeled Samples (Strict Test Set): 250
+2026-06-13 18:47:52,510 - INFO - Loading Teacher Models...
+2026-06-13 18:47:53,177 - INFO -   Loaded Teacher 1 from ./runs/train_pseudo/pseudo_8/fold_1/best.pth
+2026-06-13 18:47:53,526 - INFO -   Loaded Teacher 2 from ./runs/train_pseudo/pseudo_8/fold_2/best.pth
+2026-06-13 18:47:53,856 - INFO -   Loaded Teacher 3 from ./runs/train_pseudo/pseudo_8/fold_3/best.pth
+2026-06-13 18:47:54,178 - INFO -   Loaded Teacher 4 from ./runs/train_pseudo/pseudo_8/fold_4/best.pth
+2026-06-13 18:47:54,515 - INFO -   Loaded Teacher 5 from ./runs/train_pseudo/pseudo_8/fold_5/best.pth
+2026-06-13 18:47:54,515 - INFO - Initializing Student Model (r=32, alpha=64)
+2026-06-13 18:47:54,780 - INFO - ==================================================
+2026-06-13 18:47:54,780 - INFO - Beginning Knowledge Distillation

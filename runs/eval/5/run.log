@@ -1,0 +1,13 @@
+2026-06-08 19:15:10,645 - INFO - ==================================================
+2026-06-08 19:15:10,645 - INFO - RAG Evaluation Started. Logs saved to runs/eval/5
+2026-06-08 19:15:10,645 - INFO - ==================================================
+2026-06-08 19:15:10,845 - INFO - Using device: cuda | Model: gemini-3.1-pro
+2026-06-08 19:15:10,845 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 19:15:11,346 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 19:15:13,398 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 19:15:13,410 - INFO - Visual Debug Log saved to runs/eval/5/prompt_debug.md
+2026-06-08 19:15:14,301 - ERROR - API Request Failed: Error code: 404 - [{'error': {'code': 404, 'message': 'models/gemini-3.1-pro is not found for API version v1main, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}]
+2026-06-08 19:15:17,301 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown | Retriever Top1: Class_4
+2026-06-08 19:15:17,301 - INFO - --- DRY RUN MODE ENABLED ---
+2026-06-08 19:15:17,302 - INFO - Successfully executed 1 API call to 'gemini-3.1-pro'. Check 'runs/eval/5/prompt_debug.md'.
+2026-06-08 19:15:17,302 - INFO - Exiting early.

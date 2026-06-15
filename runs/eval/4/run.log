@@ -1,0 +1,10 @@
+2026-06-08 18:37:22,497 - INFO - ==================================================
+2026-06-08 18:37:22,497 - INFO - RAG Evaluation Started. Logs saved to runs/eval/4
+2026-06-08 18:37:22,497 - INFO - ==================================================
+2026-06-08 18:37:22,687 - INFO - Using device: cuda | Model: gemini-3.1-pro
+2026-06-08 18:37:22,687 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 18:37:23,184 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 18:37:25,229 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 18:37:25,243 - INFO - Visual Debug Log saved to runs/eval/4/prompt_debug.md
+2026-06-08 18:38:57,523 - ERROR - API Request Failed: Connection error.
+2026-06-08 18:39:00,523 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown | Retriever Top1: Class_4

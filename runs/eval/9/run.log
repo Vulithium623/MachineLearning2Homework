@@ -1,0 +1,14 @@
+2026-06-08 19:40:40,487 - INFO - ==================================================
+2026-06-08 19:40:40,487 - INFO - RAG Evaluation Started. Logs saved to runs/eval/9
+2026-06-08 19:40:40,487 - INFO - Retrieval Strategy: 3 images PER CLASS
+2026-06-08 19:40:40,487 - INFO - ==================================================
+2026-06-08 19:40:40,697 - INFO - Using device: cuda | Model: gemini-3.1-pro-preview
+2026-06-08 19:40:40,697 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 19:40:41,245 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 19:40:43,367 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 19:40:57,910 - WARNING - API returned None for content! Finish reason: length
+2026-06-08 19:40:57,911 - INFO - Visual Debug Log saved to runs/eval/9/prompt_debug.md
+2026-06-08 19:40:57,912 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown
+2026-06-08 19:40:57,912 - INFO - --- DRY RUN MODE ENABLED ---
+2026-06-08 19:40:57,912 - INFO - Successfully executed 1 API call to 'gemini-3.1-pro-preview'. Check 'runs/eval/9/prompt_debug.md'.
+2026-06-08 19:40:57,912 - INFO - Exiting early.

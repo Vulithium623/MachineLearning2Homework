@@ -1,0 +1,18 @@
+2026-06-08 18:29:59,045 - INFO - ==================================================
+2026-06-08 18:29:59,045 - INFO - RAG Evaluation Started. Logs saved to runs/eval/3
+2026-06-08 18:29:59,045 - INFO - ==================================================
+2026-06-08 18:29:59,045 - INFO -   name: None
+2026-06-08 18:29:59,045 - INFO -   data_path: /root/autodl-tmp/data/train_few_shot/
+2026-06-08 18:29:59,045 - INFO -   base_weight_path: /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-08 18:29:59,045 - INFO -   lora_weight_path: ./weights/best.pth
+2026-06-08 18:29:59,045 - INFO -   top_k: 3
+2026-06-08 18:29:59,045 - INFO -   model: gemini-3.1-pro
+2026-06-08 18:29:59,045 - INFO -   dry_run: False
+2026-06-08 18:29:59,045 - INFO - Initializing VLM client (Base URL: https://generativelanguage.googleapis.com/v1beta/openai/)
+2026-06-08 18:29:59,207 - INFO - Using device: cuda
+2026-06-08 18:29:59,207 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 18:29:59,697 - INFO - Dataset split: 212 Train (Knowledge Base), 38 Validation.
+2026-06-08 18:29:59,697 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 18:30:01,718 - INFO - Starting Multi-modal RAG Eval using gemini-3.1-pro...
+2026-06-08 18:31:19,077 - ERROR - API Request Failed: Connection error.
+2026-06-08 18:31:22,077 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown | Retriever Top1: Class_4

@@ -1,0 +1,31 @@
+2026-06-11 10:42:20,431 - INFO - ==================================================
+2026-06-11 10:42:20,431 - INFO - Pseudo Label Generation Configuration:
+2026-06-11 10:42:20,431 - INFO -   base_weight_path  : /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-11 10:42:20,431 - INFO -   batch_size        : 16
+2026-06-11 10:42:20,431 - INFO -   data_path         : /root/autodl-tmp/data/test_shuffled/
+2026-06-11 10:42:20,431 - INFO -   lora_alpha        : 16
+2026-06-11 10:42:20,431 - INFO -   lora_dropout      : 0.1
+2026-06-11 10:42:20,431 - INFO -   lora_r            : 8
+2026-06-11 10:42:20,431 - INFO -   name              : None
+2026-06-11 10:42:20,431 - INFO -   num_classes       : 5
+2026-06-11 10:42:20,431 - INFO -   num_workers       : 4
+2026-06-11 10:42:20,431 - INFO -   weights_dir       : ./weights/eval/
+2026-06-11 10:42:20,575 - INFO - Using device: cuda
+2026-06-11 10:42:20,575 - INFO - Found 5 models for ensembling.
+2026-06-11 10:42:20,575 - INFO - Loading models into memory...
+2026-06-11 10:42:20,575 - INFO - Loading Model 1/5: 1.pth
+2026-06-11 10:42:21,230 - INFO - Loading Model 2/5: 2.pth
+2026-06-11 10:42:21,565 - INFO - Loading Model 3/5: 3.pth
+2026-06-11 10:42:21,883 - INFO - Loading Model 4/5: 4.pth
+2026-06-11 10:42:22,192 - INFO - Loading Model 5/5: 5.pth
+2026-06-11 10:42:22,502 - INFO - Models loaded successfully.
+2026-06-11 10:42:22,567 - INFO - Total unlabeled images to process: 61881
+2026-06-11 10:42:22,567 - INFO - TTA variations per image: 24 (3 scales x 2 flips x 4 rotations)
+2026-06-11 10:42:22,568 - INFO - Starting inference loop...
+2026-06-11 10:43:23,018 - INFO - Processed Batch [10/3868] ...
+2026-06-11 10:44:21,199 - INFO - Processed Batch [20/3868] ...
+2026-06-11 10:45:19,409 - INFO - Processed Batch [30/3868] ...
+2026-06-11 10:46:17,618 - INFO - Processed Batch [40/3868] ...
+2026-06-11 10:47:15,919 - INFO - Processed Batch [50/3868] ...
+2026-06-11 10:48:14,234 - INFO - Processed Batch [60/3868] ...
+2026-06-11 10:49:12,443 - INFO - Processed Batch [70/3868] ...

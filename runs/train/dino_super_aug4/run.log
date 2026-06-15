@@ -1,0 +1,96 @@
+2026-06-08 13:47:53,382 - INFO - ==================================================
+2026-06-08 13:47:53,382 - INFO - Experiment Started. Results saved to runs/train/dino_super_aug4
+2026-06-08 13:47:53,382 - INFO - ==================================================
+2026-06-08 13:47:53,382 - INFO - HYPERPARAMETERS:
+2026-06-08 13:47:53,382 - INFO -   data_path: /root/autodl-tmp/data/train_few_shot/
+2026-06-08 13:47:53,382 - INFO -   weight_path: /root/autodl-tmp/weights/dinov2_small.bin
+2026-06-08 13:47:53,382 - INFO -   name: dino_super_aug
+2026-06-08 13:47:53,382 - INFO -   batch_size: 16
+2026-06-08 13:47:53,382 - INFO -   epochs: 100
+2026-06-08 13:47:53,382 - INFO -   lr: 0.0001
+2026-06-08 13:47:53,382 - INFO -   seed: 42
+2026-06-08 13:47:53,382 - INFO -   val_split: 0.15
+2026-06-08 13:47:53,382 - INFO -   num_workers: 4
+2026-06-08 13:47:53,382 - INFO -   lora_r: 8
+2026-06-08 13:47:53,382 - INFO -   lora_alpha: 16
+2026-06-08 13:47:53,382 - INFO -   lora_dropout: 0.1
+2026-06-08 13:47:53,382 - INFO -   no_hflip: False
+2026-06-08 13:47:53,383 - INFO -   no_vflip: False
+2026-06-08 13:47:53,383 - INFO -   rotate_deg: 90.0
+2026-06-08 13:47:53,383 - INFO -   color_jitter: 0.0
+2026-06-08 13:47:53,383 - INFO -   mixup_alpha: 0.0
+2026-06-08 13:47:53,383 - INFO - ==================================================
+2026-06-08 13:47:53,383 - INFO - DATA AUGMENTATION SETTINGS:
+2026-06-08 13:47:53,383 - INFO -   Horizontal Flip : Enabled
+2026-06-08 13:47:53,383 - INFO -   Vertical Flip   : Enabled
+2026-06-08 13:47:53,383 - INFO -   Rotation        : Random [-90.0, +90.0] degrees
+2026-06-08 13:47:53,383 - INFO -   Color Jitter    : Disabled
+2026-06-08 13:47:53,383 - INFO -   MixUp           : Disabled
+2026-06-08 13:47:53,383 - INFO - ==================================================
+2026-06-08 13:47:53,383 - INFO - Loading dataset and applying Stratified Split...
+2026-06-08 13:47:53,385 - INFO - Train size: 212 | Val size: 38
+2026-06-08 13:47:53,861 - INFO - Trainable Parameters: 149381 / 22207498 (0.6727%)
+2026-06-08 13:47:56,969 - INFO - Epoch [01/100] | Train Loss: 1.9504 | Val Loss: 2.1371 | Macro-F1: 0.2334 | Balanced Acc: 0.2786
+2026-06-08 13:47:57,065 - INFO - --> Saved new best model with Macro-F1: 0.2334
+2026-06-08 13:47:59,780 - INFO - Epoch [02/100] | Train Loss: 1.6621 | Val Loss: 2.0376 | Macro-F1: 0.2536 | Balanced Acc: 0.2821
+2026-06-08 13:47:59,946 - INFO - --> Saved new best model with Macro-F1: 0.2536
+2026-06-08 13:48:02,635 - INFO - Epoch [03/100] | Train Loss: 1.6421 | Val Loss: 1.9359 | Macro-F1: 0.2439 | Balanced Acc: 0.2857
+2026-06-08 13:48:05,338 - INFO - Epoch [04/100] | Train Loss: 1.4779 | Val Loss: 1.8475 | Macro-F1: 0.2871 | Balanced Acc: 0.3357
+2026-06-08 13:48:05,524 - INFO - --> Saved new best model with Macro-F1: 0.2871
+2026-06-08 13:48:08,240 - INFO - Epoch [05/100] | Train Loss: 1.4730 | Val Loss: 1.7205 | Macro-F1: 0.3529 | Balanced Acc: 0.4143
+2026-06-08 13:48:08,405 - INFO - --> Saved new best model with Macro-F1: 0.3529
+2026-06-08 13:48:11,098 - INFO - Epoch [06/100] | Train Loss: 1.3384 | Val Loss: 1.6240 | Macro-F1: 0.3631 | Balanced Acc: 0.4393
+2026-06-08 13:48:11,261 - INFO - --> Saved new best model with Macro-F1: 0.3631
+2026-06-08 13:48:13,957 - INFO - Epoch [07/100] | Train Loss: 1.3493 | Val Loss: 1.7139 | Macro-F1: 0.2941 | Balanced Acc: 0.3893
+2026-06-08 13:48:16,658 - INFO - Epoch [08/100] | Train Loss: 1.2257 | Val Loss: 1.7283 | Macro-F1: 0.3279 | Balanced Acc: 0.3929
+2026-06-08 13:48:19,361 - INFO - Epoch [09/100] | Train Loss: 1.1704 | Val Loss: 1.8157 | Macro-F1: 0.3176 | Balanced Acc: 0.4179
+2026-06-08 13:48:22,056 - INFO - Epoch [10/100] | Train Loss: 1.1426 | Val Loss: 1.6831 | Macro-F1: 0.2985 | Balanced Acc: 0.3929
+2026-06-08 13:48:24,741 - INFO - Epoch [11/100] | Train Loss: 1.0811 | Val Loss: 1.7051 | Macro-F1: 0.2993 | Balanced Acc: 0.3714
+2026-06-08 13:48:27,490 - INFO - Epoch [12/100] | Train Loss: 1.0585 | Val Loss: 1.6483 | Macro-F1: 0.3895 | Balanced Acc: 0.4714
+2026-06-08 13:48:27,672 - INFO - --> Saved new best model with Macro-F1: 0.3895
+2026-06-08 13:48:30,402 - INFO - Epoch [13/100] | Train Loss: 0.9770 | Val Loss: 1.5445 | Macro-F1: 0.3720 | Balanced Acc: 0.4464
+2026-06-08 13:48:33,073 - INFO - Epoch [14/100] | Train Loss: 0.9635 | Val Loss: 1.4993 | Macro-F1: 0.3686 | Balanced Acc: 0.4179
+2026-06-08 13:48:35,748 - INFO - Epoch [15/100] | Train Loss: 0.9197 | Val Loss: 1.5440 | Macro-F1: 0.3278 | Balanced Acc: 0.3964
+2026-06-08 13:48:38,413 - INFO - Epoch [16/100] | Train Loss: 0.8376 | Val Loss: 1.5134 | Macro-F1: 0.3300 | Balanced Acc: 0.3929
+2026-06-08 13:48:41,129 - INFO - Epoch [17/100] | Train Loss: 0.7941 | Val Loss: 1.5629 | Macro-F1: 0.3266 | Balanced Acc: 0.3964
+2026-06-08 13:48:43,830 - INFO - Epoch [18/100] | Train Loss: 0.7740 | Val Loss: 1.5162 | Macro-F1: 0.3519 | Balanced Acc: 0.4214
+2026-06-08 13:48:46,572 - INFO - Epoch [19/100] | Train Loss: 0.7841 | Val Loss: 1.5934 | Macro-F1: 0.2992 | Balanced Acc: 0.4071
+2026-06-08 13:48:49,225 - INFO - Epoch [20/100] | Train Loss: 0.7156 | Val Loss: 1.4541 | Macro-F1: 0.3768 | Balanced Acc: 0.4607
+2026-06-08 13:48:51,930 - INFO - Epoch [21/100] | Train Loss: 0.7062 | Val Loss: 1.3859 | Macro-F1: 0.4164 | Balanced Acc: 0.4857
+2026-06-08 13:48:52,120 - INFO - --> Saved new best model with Macro-F1: 0.4164
+2026-06-08 13:48:54,810 - INFO - Epoch [22/100] | Train Loss: 0.6934 | Val Loss: 1.5672 | Macro-F1: 0.3762 | Balanced Acc: 0.4929
+2026-06-08 13:48:57,529 - INFO - Epoch [23/100] | Train Loss: 0.6867 | Val Loss: 1.4669 | Macro-F1: 0.3764 | Balanced Acc: 0.4607
+2026-06-08 13:49:00,198 - INFO - Epoch [24/100] | Train Loss: 0.6108 | Val Loss: 1.5699 | Macro-F1: 0.3083 | Balanced Acc: 0.4036
+2026-06-08 13:49:02,888 - INFO - Epoch [25/100] | Train Loss: 0.5766 | Val Loss: 1.4240 | Macro-F1: 0.4213 | Balanced Acc: 0.5179
+2026-06-08 13:49:03,069 - INFO - --> Saved new best model with Macro-F1: 0.4213
+2026-06-08 13:49:05,774 - INFO - Epoch [26/100] | Train Loss: 0.5281 | Val Loss: 1.5439 | Macro-F1: 0.3515 | Balanced Acc: 0.4321
+2026-06-08 13:49:08,466 - INFO - Epoch [27/100] | Train Loss: 0.5745 | Val Loss: 1.4924 | Macro-F1: 0.4099 | Balanced Acc: 0.4893
+2026-06-08 13:49:11,141 - INFO - Epoch [28/100] | Train Loss: 0.5193 | Val Loss: 1.3661 | Macro-F1: 0.4658 | Balanced Acc: 0.5429
+2026-06-08 13:49:11,350 - INFO - --> Saved new best model with Macro-F1: 0.4658
+2026-06-08 13:49:14,014 - INFO - Epoch [29/100] | Train Loss: 0.4931 | Val Loss: 1.4864 | Macro-F1: 0.3840 | Balanced Acc: 0.4929
+2026-06-08 13:49:16,729 - INFO - Epoch [30/100] | Train Loss: 0.4631 | Val Loss: 1.4410 | Macro-F1: 0.4190 | Balanced Acc: 0.5179
+2026-06-08 13:49:19,427 - INFO - Epoch [31/100] | Train Loss: 0.4372 | Val Loss: 1.4439 | Macro-F1: 0.4432 | Balanced Acc: 0.5464
+2026-06-08 13:49:22,185 - INFO - Epoch [32/100] | Train Loss: 0.3981 | Val Loss: 1.4180 | Macro-F1: 0.4947 | Balanced Acc: 0.5714
+2026-06-08 13:49:22,381 - INFO - --> Saved new best model with Macro-F1: 0.4947
+2026-06-08 13:49:25,135 - INFO - Epoch [33/100] | Train Loss: 0.3553 | Val Loss: 1.4578 | Macro-F1: 0.4811 | Balanced Acc: 0.5714
+2026-06-08 13:49:27,844 - INFO - Epoch [34/100] | Train Loss: 0.3670 | Val Loss: 1.4841 | Macro-F1: 0.4811 | Balanced Acc: 0.5714
+2026-06-08 13:49:30,520 - INFO - Epoch [35/100] | Train Loss: 0.3473 | Val Loss: 1.4618 | Macro-F1: 0.4544 | Balanced Acc: 0.5464
+2026-06-08 13:49:33,266 - INFO - Epoch [36/100] | Train Loss: 0.3200 | Val Loss: 1.4621 | Macro-F1: 0.4728 | Balanced Acc: 0.5750
+2026-06-08 13:49:35,970 - INFO - Epoch [37/100] | Train Loss: 0.2986 | Val Loss: 1.5117 | Macro-F1: 0.5106 | Balanced Acc: 0.6000
+2026-06-08 13:49:36,170 - INFO - --> Saved new best model with Macro-F1: 0.5106
+2026-06-08 13:49:38,899 - INFO - Epoch [38/100] | Train Loss: 0.2758 | Val Loss: 1.5777 | Macro-F1: 0.5710 | Balanced Acc: 0.6214
+2026-06-08 13:49:39,085 - INFO - --> Saved new best model with Macro-F1: 0.5710
+2026-06-08 13:49:41,761 - INFO - Epoch [39/100] | Train Loss: 0.2868 | Val Loss: 1.5733 | Macro-F1: 0.5145 | Balanced Acc: 0.6000
+2026-06-08 13:49:44,470 - INFO - Epoch [40/100] | Train Loss: 0.2626 | Val Loss: 1.4715 | Macro-F1: 0.5295 | Balanced Acc: 0.5964
+2026-06-08 13:49:47,180 - INFO - Epoch [41/100] | Train Loss: 0.2829 | Val Loss: 1.5242 | Macro-F1: 0.5296 | Balanced Acc: 0.5964
+2026-06-08 13:49:49,881 - INFO - Epoch [42/100] | Train Loss: 0.2469 | Val Loss: 1.5804 | Macro-F1: 0.4923 | Balanced Acc: 0.5714
+2026-06-08 13:49:52,555 - INFO - Epoch [43/100] | Train Loss: 0.2028 | Val Loss: 1.5754 | Macro-F1: 0.4876 | Balanced Acc: 0.5714
+2026-06-08 13:49:55,283 - INFO - Epoch [44/100] | Train Loss: 0.1983 | Val Loss: 1.6587 | Macro-F1: 0.5078 | Balanced Acc: 0.5679
+2026-06-08 13:49:57,986 - INFO - Epoch [45/100] | Train Loss: 0.1805 | Val Loss: 1.7175 | Macro-F1: 0.4685 | Balanced Acc: 0.5429
+2026-06-08 13:50:00,709 - INFO - Epoch [46/100] | Train Loss: 0.1745 | Val Loss: 1.8421 | Macro-F1: 0.4489 | Balanced Acc: 0.5464
+2026-06-08 13:50:03,400 - INFO - Epoch [47/100] | Train Loss: 0.1723 | Val Loss: 1.7537 | Macro-F1: 0.4903 | Balanced Acc: 0.5714
+2026-06-08 13:50:06,107 - INFO - Epoch [48/100] | Train Loss: 0.1553 | Val Loss: 1.6869 | Macro-F1: 0.4685 | Balanced Acc: 0.5429
+2026-06-08 13:50:08,822 - INFO - Epoch [49/100] | Train Loss: 0.1716 | Val Loss: 1.8616 | Macro-F1: 0.5082 | Balanced Acc: 0.5679
+2026-06-08 13:50:11,514 - INFO - Epoch [50/100] | Train Loss: 0.1590 | Val Loss: 1.9094 | Macro-F1: 0.4502 | Balanced Acc: 0.5464
+2026-06-08 13:50:14,259 - INFO - Epoch [51/100] | Train Loss: 0.1542 | Val Loss: 1.8154 | Macro-F1: 0.4728 | Balanced Acc: 0.5750
+2026-06-08 13:50:16,957 - INFO - Epoch [52/100] | Train Loss: 0.1057 | Val Loss: 1.7218 | Macro-F1: 0.5321 | Balanced Acc: 0.5964

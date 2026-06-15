@@ -1,0 +1,9 @@
+2026-06-13 19:07:44,489 - INFO - ==================================================
+2026-06-13 19:07:44,490 - INFO - Offline Knowledge Distillation Started
+2026-06-13 19:07:44,490 - INFO - ==================================================
+2026-06-13 19:07:44,490 - INFO - No cache found. Starting offline extraction of 60k unlabeled images...
+2026-06-13 19:07:46,344 - INFO - Extracting features. This will take a few minutes but only runs ONCE.
+2026-06-13 19:23:57,286 - INFO - Successfully saved 61881 soft labels to ./runs/train_pseudo/pseudo_8/teacher_soft_labels_cache.pt
+2026-06-13 19:23:57,303 - INFO - Initializing Student Model (r=32, alpha=64)
+2026-06-13 19:23:57,595 - INFO - ==================================================
+2026-06-13 19:23:57,595 - INFO - Beginning Fast Offline Knowledge Distillation

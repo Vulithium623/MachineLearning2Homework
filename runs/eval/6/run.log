@@ -1,0 +1,13 @@
+2026-06-08 19:19:00,250 - INFO - ==================================================
+2026-06-08 19:19:00,251 - INFO - RAG Evaluation Started. Logs saved to runs/eval/6
+2026-06-08 19:19:00,251 - INFO - ==================================================
+2026-06-08 19:19:00,467 - INFO - Using device: cuda | Model: gemini-3.1-pro-preview
+2026-06-08 19:19:00,467 - INFO - Loading Phase 2 DINOv2-LoRA model offline...
+2026-06-08 19:19:00,977 - INFO - Extracting feature vectors for Knowledge Base...
+2026-06-08 19:19:03,035 - INFO - Starting Multi-modal Evaluation...
+2026-06-08 19:19:03,048 - INFO - Visual Debug Log saved to runs/eval/6/prompt_debug.md
+2026-06-08 19:19:09,972 - WARNING - Failed to parse label. Raw output: Class
+2026-06-08 19:19:09,972 - INFO - Sample 01/38 | True: Class_4 | Pred: unknown | Retriever Top1: Class_4
+2026-06-08 19:19:09,972 - INFO - --- DRY RUN MODE ENABLED ---
+2026-06-08 19:19:09,972 - INFO - Successfully executed 1 API call to 'gemini-3.1-pro-preview'. Check 'runs/eval/6/prompt_debug.md'.
+2026-06-08 19:19:09,972 - INFO - Exiting early.

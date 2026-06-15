@@ -1,0 +1,23 @@
+{
+  "data_dir": "/root/autodl-tmp/train_few_shot",
+  "name": null,
+  "epochs": 100,
+  "batch_size": 8,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "num_workers": 4,
+  "seed": 42,
+  "device": "cuda",
+  "no_small_input": false,
+  "class_names": [
+    "Class_0",
+    "Class_1",
+    "Class_2",
+    "Class_3",
+    "Class_4"
+  ],
+  "num_train": 200,
+  "num_val": 25,
+  "num_test": 25,
+  "started_at": "2026-06-04T14:09:54.859623"
+}
